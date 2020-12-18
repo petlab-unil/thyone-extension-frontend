@@ -12,32 +12,16 @@
     "@types/react-dom": "^16.9.10",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-scripts": "4.0.1",
-    "typescript": "^4.1.3",
-    "web-vitals": "^0.2.4"
+    "styled-components": "^5.2.1",
+    "typescript": "^4.1.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "parcel src/index.html --out-dir build/debug",
+    "build": "parcel build src/hec.js --out-dir hec ./ && jupyter nbextension install hec/hec.js --user && jupyter nbextension enable hec --user"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "babel-preset-react": "^6.24.1",
+    "parcel-bundler": "^1.12.4"
   }
 }

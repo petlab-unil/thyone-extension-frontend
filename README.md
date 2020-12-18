@@ -4,7 +4,11 @@
 
 ## Clone repo
 
-  git clone git@github.com:sakex/hec-jupyter-extension.git && cd hec-jupyter-extension
+    git clone git@github.com:sakex/hec-jupyter-extension.git && cd hec-jupyter-extension
+
+## Install dependencies
+
+    npm i
 
 ## Jupyter Notebook
 
@@ -20,11 +24,12 @@
 
         jupyter contrib nbextension install --user
 
-
-## Enable HEC Extension
-
-  jupyter nbextension enable hec
-
 # Launch Jupyter
 
     jupyter notebook
+
+# Test your code in Jupyter
+
+    npm run build
+
+- Reload the Notebook to see the changes

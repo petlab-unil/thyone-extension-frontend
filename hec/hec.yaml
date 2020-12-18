@@ -1,7 +1,7 @@
 Type: Jupyter Notebook Extension
 Compatibility: 3.x, 4.x, 5.x, 6.x
-Name: Eléments de Programmation
-Main: main.js
+Name: hec
+Main: hec.js
 Link: README.md
 Description: Extension for Eléments de Programmation
 
