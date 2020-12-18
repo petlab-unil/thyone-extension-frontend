@@ -1,15 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import {SideBar} from "./components/SideBar";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {SideBar} from './components/SideBar';
 
 window.define([
-    "base/js/namespace",
+    'base/js/namespace',
 ], function (
     IPython,
 ) {
     const initialize = () => {
-        const div = document.createElement("div");
-        div.id = "react-root";
+        const div = document.createElement('div');
+        div.id = 'react-root';
 
         document.body.prepend(div);
         ReactDOM.render(<SideBar />, div);

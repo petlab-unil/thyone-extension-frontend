@@ -1,5 +1,5 @@
-import React, {Component} from "react";
-import Styled from "styled-components";
+import React, {Component} from 'react';
+import Styled from 'styled-components';
 
 const SideBarContainer = Styled.div`
     width: 400px;
