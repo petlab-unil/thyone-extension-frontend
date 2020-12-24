@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {SideBar} from './components/SideBar';
+import {Extension} from "~components/extension";
 
 window.define([
     'base/js/namespace',
@@ -12,7 +12,7 @@ window.define([
         div.id = 'react-root';
 
         document.body.prepend(div);
-        ReactDOM.render(<SideBar />, div);
+        ReactDOM.render(<Extension />, div);
     };
 
     const load_ipython_extension = () => {

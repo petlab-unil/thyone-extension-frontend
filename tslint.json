@@ -11,7 +11,7 @@
     "ter-indent": 4,
     "no-increment-decrement": false,
     "max-line-length": false,
-    "semicolon": false,
+    "semicolon": [true, "always", "ignore-interfaces"],
     "radix": false,
     "function-name": [
       true,
