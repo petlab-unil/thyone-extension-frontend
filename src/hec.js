@@ -12,14 +12,14 @@ window.define([
         div.id = 'react-root';
 
         document.body.prepend(div);
-        ReactDOM.render(<Extension />, div);
+        ReactDOM.render(<Extension iPython={IPython} />, div);
     };
 
-    const load_ipython_extension = () => {
+    const initExtension = () => {
         return IPython.notebook.config.loaded.then(initialize);
     };
 
     return {
-        load_ipython_extension: load_ipython_extension,
+        load_ipython_extension: initExtension,
     };
 });

@@ -1,8 +1,9 @@
 import React, {useContext} from 'react';
 import {MainContext} from '~contexts/mainContext';
-import {MessageBubble} from './messageBubble';
 import Styled from 'styled-components';
 import {scrollbar} from '~components/scrollBar';
+import {MsgType} from '~websocketEvents/types';
+import {MessageBubble} from '~components/chat/messageBubble';
 
 const HistoryContainer = Styled.div`
     overflow-y: auto;
@@ -12,6 +13,16 @@ const HistoryContainer = Styled.div`
 export const ChatHistory = () => {
     const {messages, userName} = useContext(MainContext);
     return <HistoryContainer>
-        {messages.map(msg => <MessageBubble key={msg.timeStamp} isSender={userName === msg.sender}>{msg.content}</MessageBubble>)}
+        {messages.map((msg) => {
+            if (msg.msgType === MsgType.Msg) {
+                return <MessageBubble key={msg.timeStamp}
+                                      isSender={userName === msg.sender}>{msg.content}</MessageBubble>;
+            }
+            if (msg.msgType === MsgType.Cell) {
+                return <div dangerouslySetInnerHTML={{__html: msg.content}}/>;
+            }
+            throw new Error('Invalid msgtype');
+        })
+        }
     </HistoryContainer>;
 };
