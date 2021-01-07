@@ -6,6 +6,10 @@ import {initListeners} from '~websocketEvents/initListeners';
 import {ChatMessage} from '~websocketEvents/types';
 import {Chat} from '~components/chat';
 import {NoPair} from '~components/chat/noPair';
+import {Cell, IPython} from '~iPythonTypes';
+import {ToggleButton} from '~components/toggleButton';
+
+const TOOLBAR_PRESET_NAME = 'Share Cell';
 
 const SideBarContainer = Styled.div`
     width: 400px;
@@ -21,20 +25,33 @@ const SideBarContainer = Styled.div`
     border-radius: 10px;
 `;
 
-export class Extension extends Component<{}, GlobalState> {
-    state: GlobalState;
+interface ExtensionProps {
+    iPython: IPython
+}
 
-    constructor(props: {}) {
+export class Extension extends Component<ExtensionProps, GlobalState> {
+    state: GlobalState;
+    private readonly iPython: IPython;
+
+    constructor(props: ExtensionProps) {
         super(props);
         const path = window.location.href.split('/');
         const userName = path[path.indexOf('user') + 1];
+        this.iPython = props.iPython;
 
         this.state = {
             userName,
+            toggled: true,
+            setToggled: this.setToggled,
             socket: null,
             pair: null,
             messages: [],
+            selectedCells: new Set<Cell>(),
         };
+    }
+
+    private setToggled = (toggled: boolean) => {
+        this.setState({toggled});
     }
 
     public addMessage = (message: ChatMessage) => {
@@ -45,18 +62,65 @@ export class Extension extends Component<{}, GlobalState> {
         this.setState({pair: message});
     }
 
+    private registerCellToolbar = () => {
+        const {CellToolbar} = this.iPython;
+
+        const selectCellUiCallback = CellToolbar.utils.checkbox_ui_generator(
+            TOOLBAR_PRESET_NAME,
+            (cell, value) => {
+                cell.metadata.hecSelected = value;
+                this.setState(({selectedCells}) => {
+                    if (!value) {
+                        selectedCells.delete(cell);
+                    } else {
+                        selectedCells.add(cell);
+                    }
+                    return {
+                        selectedCells: new Set([...selectedCells]),
+                    };
+                });
+
+            }, (cell) => {
+                return cell.metadata.hecSelected;
+            },
+        );
+
+        CellToolbar.register_callback(TOOLBAR_PRESET_NAME, selectCellUiCallback, 'code');
+        CellToolbar.register_preset(TOOLBAR_PRESET_NAME, [TOOLBAR_PRESET_NAME], this.iPython.notebook);
+        CellToolbar.activate_preset(TOOLBAR_PRESET_NAME);
+    }
+
+    private initJupyterBindings = () => {
+        const shareSelectedCells = () => {
+            this.state.selectedCells.forEach((cell) => {
+                const {outerHTML} = cell.element[0];
+                this.state.socket?.emit('cell', outerHTML);
+            });
+        };
+
+        this.iPython.toolbar.add_buttons_group([
+            {
+                label: 'Share Selected Cells',
+                icon: 'fas fa-share-square',
+                callback: shareSelectedCells,
+            },
+        ]);
+    }
+
     public componentDidMount = () => {
         const socket = SocketIOClient(`ws://localhost:3000?user=${this.state.userName}`);
         initListeners(socket, this);
+        this.registerCellToolbar();
+        this.initJupyterBindings();
         this.setState({socket});
     }
 
     render() {
         return <MainContext.Provider value={this.state}>
-            <SideBarContainer>
+            {this.state.toggled ? <SideBarContainer>
                 {this.state?.pair !== null ? <Chat/> :
                     <NoPair>You haven't been paired with anyone, wait for someone to log in</NoPair>}
-            </SideBarContainer>
+            </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }
 }
