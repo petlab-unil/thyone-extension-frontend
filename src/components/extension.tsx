@@ -38,21 +38,23 @@ const SideBarContainer = Styled.div`
 `;
 
 interface ExtensionProps {
-    iPython: IPython
+    iPython: IPython,
+    userName: string,
+    token: string
 }
 
 export class Extension extends Component<ExtensionProps, GlobalState> {
     state: GlobalState;
     private readonly iPython: IPython;
+    private readonly token: string;
 
     constructor(props: ExtensionProps) {
         super(props);
-        const path = window.location.href.split('/');
-        const userName = path[path.indexOf('user') + 1];
         this.iPython = props.iPython;
+        this.token = props.token;
 
         this.state = {
-            userName,
+            userName: props.userName,
             toggled: true,
             setToggled: this.setToggled,
             socket: null,
@@ -99,7 +101,9 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
         CellToolbar.register_callback(TOOLBAR_PRESET_NAME, selectCellUiCallback, 'code');
         CellToolbar.register_preset(TOOLBAR_PRESET_NAME, [TOOLBAR_PRESET_NAME], this.iPython.notebook);
+        CellToolbar.global_show();
         CellToolbar.activate_preset(TOOLBAR_PRESET_NAME);
+        this.iPython.notebook.metadata.celltoolbar = TOOLBAR_PRESET_NAME;
     }
 
     private initJupyterBindings = () => {
@@ -120,7 +124,15 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public componentDidMount = () => {
-        const socket = SocketIOClient(`ws://localhost:3000?user=${this.state.userName}`);
+        const socket = SocketIOClient(process.env.BACKEND_WS ?? '',  {
+            transportOptions: {
+                polling: {
+                    extraHeaders: {
+                        hubtoken: this.token,
+                    },
+                },
+            },
+        });
         initListeners(socket, this);
         this.registerCellToolbar();
         this.initJupyterBindings();
