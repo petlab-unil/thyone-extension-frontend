@@ -40,15 +40,18 @@ const SideBarContainer = Styled.div`
 interface ExtensionProps {
     iPython: IPython,
     userName: string,
+    token: string
 }
 
 export class Extension extends Component<ExtensionProps, GlobalState> {
     state: GlobalState;
     private readonly iPython: IPython;
+    private readonly token: string;
 
     constructor(props: ExtensionProps) {
         super(props);
         this.iPython = props.iPython;
+        this.token = props.token;
 
         this.state = {
             userName: props.userName,
@@ -123,7 +126,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             transportOptions: {
                 polling: {
                     extraHeaders: {
-                        hubCookies: document.cookie,
+                        hubtoken: this.token,
                     },
                 },
             },
