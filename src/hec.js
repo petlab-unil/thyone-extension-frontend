@@ -32,7 +32,6 @@ window.define([
             }
         });
         const user = await req.json();
-        console.log(user);
         document.body.prepend(div);
         ReactDOM.render(<Extension iPython={IPython} userName={user.name} token={token} />, div);
     };

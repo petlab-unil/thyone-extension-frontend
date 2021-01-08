@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6f5c2f87-f546-4e03-9326-bece806f5f29" name="Default Changelist" comment=".env">
+    <list default="true" id="6f5c2f87-f546-4e03-9326-bece806f5f29" name="Default Changelist" comment="jupyterhub token">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/extension.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/extension.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/hec.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hec.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/iPythonTypes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/iPythonTypes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/websocketEvents/chat/discussion.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketEvents/chat/discussion.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +111,14 @@
       <option name="project" value="LOCAL" />
       <updated>1610121599697</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="jupyterhub token">
+      <created>1610125219389</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1610125219389</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -132,7 +141,8 @@
     <MESSAGE value="tslint" />
     <MESSAGE value="chat first exchanges" />
     <MESSAGE value=".env" />
-    <option name="LAST_COMMIT_MESSAGE" value=".env" />
+    <MESSAGE value="jupyterhub token" />
+    <option name="LAST_COMMIT_MESSAGE" value="jupyterhub token" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

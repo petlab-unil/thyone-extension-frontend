@@ -6,7 +6,7 @@ export interface Cell {
 }
 
 interface Notebook {
-
+    metadata: any;
 }
 
 interface CheckBoxUiGenerator {
@@ -23,6 +23,7 @@ export interface CellToolbar {
     register_callback: (name: string, callback: CheckBoxUiGenerator, cellTypes: string) => void
     register_preset: (name: string, presetList: string[], notebook: Notebook) => void
     activate_preset: (name: string) => void
+    global_show(): void;
 }
 
 export interface ButtonsGroup {

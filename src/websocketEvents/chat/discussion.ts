@@ -6,6 +6,5 @@ export const onMessage = (extension: Extension) => (message: ChatMessage) => {
 };
 
 export const onPair = (extension: Extension) => (message: string) => {
-    console.log(message);
     extension.foundPair(message);
 };

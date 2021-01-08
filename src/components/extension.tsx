@@ -101,7 +101,9 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
         CellToolbar.register_callback(TOOLBAR_PRESET_NAME, selectCellUiCallback, 'code');
         CellToolbar.register_preset(TOOLBAR_PRESET_NAME, [TOOLBAR_PRESET_NAME], this.iPython.notebook);
+        CellToolbar.global_show();
         CellToolbar.activate_preset(TOOLBAR_PRESET_NAME);
+        this.iPython.notebook.metadata.celltoolbar = TOOLBAR_PRESET_NAME;
     }
 
     private initJupyterBindings = () => {
