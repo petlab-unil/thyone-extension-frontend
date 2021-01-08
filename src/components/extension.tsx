@@ -9,6 +9,18 @@ import {NoPair} from '~components/chat/noPair';
 import {Cell, IPython} from '~iPythonTypes';
 import {ToggleButton} from '~components/toggleButton';
 
+const UntoggleButton = Styled.div`
+    height: 2em;
+    line-height: 2em;
+    width: 100%;
+    float: right;
+    cursor: pointer;
+    text-align: center;
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+`;
+
 const TOOLBAR_PRESET_NAME = 'Share Cell';
 
 const SideBarContainer = Styled.div`
@@ -118,6 +130,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     render() {
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
+                <UntoggleButton onClick={() => this.setToggled(false)}>Untoggle</UntoggleButton>
                 {this.state?.pair !== null ? <Chat/> :
                     <NoPair>You haven't been paired with anyone, wait for someone to log in</NoPair>}
             </SideBarContainer> : <ToggleButton/>}
