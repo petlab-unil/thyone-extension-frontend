@@ -8,7 +8,7 @@ const ChatContainer = Styled.div`
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-rows: 10px 40px 80fr 20fr;
+    grid-template-rows: 40px 80fr 20fr;
     grid-template-colums: 100%;
     grid-row-gap: 20px;
 `;
@@ -20,18 +20,10 @@ const PairedWith = Styled.div`
     text-align: center;
 `;
 
-const UntoggleButton = Styled.div`
-    height: 100%;
-    width: 100%;
-    float: right;
-    cursor: pointer;
-`;
-
 export const Chat = () => {
-    const {pair, setToggled} = useContext(MainContext);
+    const {pair} = useContext(MainContext);
     return (
         <ChatContainer>
-            <UntoggleButton onClick={() => setToggled(false)}>Untoggle</UntoggleButton>
             <PairedWith>Paired with {pair}</PairedWith>
             <ChatHistory/>
             <ChatInput/>
