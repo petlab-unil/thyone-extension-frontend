@@ -38,7 +38,8 @@ const SideBarContainer = Styled.div`
 `;
 
 interface ExtensionProps {
-    iPython: IPython
+    iPython: IPython,
+    userName: string,
 }
 
 export class Extension extends Component<ExtensionProps, GlobalState> {
@@ -47,12 +48,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     constructor(props: ExtensionProps) {
         super(props);
-        const path = window.location.href.split('/');
-        const userName = path[path.indexOf('user') + 1];
         this.iPython = props.iPython;
 
         this.state = {
-            userName,
+            userName: props.userName,
             toggled: true,
             setToggled: this.setToggled,
             socket: null,
@@ -120,7 +119,15 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public componentDidMount = () => {
-        const socket = SocketIOClient(`ws://localhost:3000?user=${this.state.userName}`);
+        const socket = SocketIOClient(process.env.BACKEND_WS ?? '',  {
+            transportOptions: {
+                polling: {
+                    extraHeaders: {
+                        hubCookies: document.cookie,
+                    },
+                },
+            },
+        });
         initListeners(socket, this);
         this.registerCellToolbar();
         this.initJupyterBindings();
