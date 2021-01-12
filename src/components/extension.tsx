@@ -106,6 +106,15 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.iPython.notebook.metadata.celltoolbar = TOOLBAR_PRESET_NAME;
     }
 
+    private updatePreviousSelectedCells = () => {
+        this.iPython.notebook.get_cells().forEach((cell : any) => {
+            const value = cell.metadata.hecSelected;
+            if (value) {
+                this.state.selectedCells.add(cell);
+            }
+        });
+    }
+
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
@@ -134,6 +143,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             },
         });
         initListeners(socket, this);
+        this.updatePreviousSelectedCells();
         this.registerCellToolbar();
         this.initJupyterBindings();
         this.setState({socket});
