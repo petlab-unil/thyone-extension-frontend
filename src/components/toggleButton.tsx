@@ -9,8 +9,8 @@ const ToggleButtonContainer = Styled.div`
         right: 10px;
         top: 120px;
         position: fixed;
-        background-color: #eeeeee;
-        border: 1px solid #999;
+        background-color: #fff;
+        border: 1px solid #ababab;
         color: black;
         z-index: 100000;
         padding: 10px;
