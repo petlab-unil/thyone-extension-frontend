@@ -1,33 +1,31 @@
 export const scrollbar = `
 ::-webkit-scrollbar {
-    width: 9px;
-    height: 9px;
+    width: 6px;
+    height: 6px;
 }
 ::-webkit-scrollbar-button {
     width: 0px;
     height: 0px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #3d464d;
-    border: 1px none #ffffff;
-    border-radius: 50px;
+    background: #8c8c8c;
+    border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #5a6a77;
+    background: ##798b9a;
 }
 ::-webkit-scrollbar-thumb:active {
-    background: #52606b;
+    background: #7d7d7d;
 }
 ::-webkit-scrollbar-track {
-    background: #666666;
-    border: 2px none #ffffff;
-    border-radius: 37px;
+    background: #fff;
+    border-radius: 10px;
 }
 ::-webkit-scrollbar-track:hover {
-    background: #666666;
+    background: #fff;
 }
 ::-webkit-scrollbar-track:active {
-    background: #666666;
+    background: #fff;
 }
 ::-webkit-scrollbar-corner {
     background: transparent;

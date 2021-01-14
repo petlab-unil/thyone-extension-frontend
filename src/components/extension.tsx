@@ -15,10 +15,9 @@ const UntoggleButton = Styled.div`
     width: 100%;
     float: right;
     cursor: pointer;
+    background-color: #fff;
     text-align: center;
-    border-bottom: 1px solid black;
     padding-bottom: 2px;
-    margin-bottom: 10px;
 `;
 
 const TOOLBAR_PRESET_NAME = 'Share Cell';
@@ -29,9 +28,9 @@ const SideBarContainer = Styled.div`
     right: 10px;
     top: 120px;
     position: fixed;
-    background-color: #eeeeee;
-    border: 1px solid #999;
-    color: black;
+    background-color: #fff;
+    border: 1px solid #ababab;
+    color: #000000;
     z-index: 100000;
     padding: 10px;
     border-radius: 10px;
@@ -106,6 +105,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.iPython.notebook.metadata.celltoolbar = TOOLBAR_PRESET_NAME;
     }
 
+    private updatePreviousSelectedCells = () => {
+        this.setState({selectedCells: new Set(this.iPython.notebook.get_cells().filter(cell => cell.metadata.hecSelected))});
+    }
+
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
@@ -134,6 +137,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             },
         });
         initListeners(socket, this);
+        this.updatePreviousSelectedCells();
         this.registerCellToolbar();
         this.initJupyterBindings();
         this.setState({socket});

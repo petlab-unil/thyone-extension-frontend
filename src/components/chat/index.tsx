@@ -14,10 +14,10 @@ const ChatContainer = Styled.div`
 `;
 
 const PairedWith = Styled.div`
-    border-bottom: 1px solid black;
     line-height: 40px;
     width: 100%;
     text-align: center;
+    background: #5cb85c40;
 `;
 
 export const Chat = () => {
