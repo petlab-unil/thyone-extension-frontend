@@ -8,3 +8,7 @@ export const onMessage = (extension: Extension) => (message: ChatMessage) => {
 export const onPair = (extension: Extension) => (message: string) => {
     extension.foundPair(message);
 };
+
+export const onPairDisconnected = (extension: Extension) => () => {
+    extension.pairDisconnected();
+};
