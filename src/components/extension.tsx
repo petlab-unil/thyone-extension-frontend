@@ -76,6 +76,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.setState({pair: message});
     }
 
+    public pairDisconnected = () => {
+        this.setState({pair: null, messages: []});
+    }
+
     private registerCellToolbar = () => {
         const {CellToolbar} = this.iPython;
 
