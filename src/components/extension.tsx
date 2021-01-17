@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import Styled from 'styled-components';
 import SocketIOClient from 'socket.io-client';
 import {initListeners} from '~websocketEvents/initListeners';
-import {ChatMessage} from '~websocketEvents/types';
+import {ChatMessage, PairedInitialData} from '~websocketEvents/types';
 import {Chat} from '~components/chat';
 import {NoPair} from '~components/chat/noPair';
 import {Cell, IPython} from '~iPythonTypes';
@@ -71,8 +71,9 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.setState(prev => ({...prev, messages: [...prev.messages, message]}));
     }
 
-    public foundPair = (message: string) => {
-        this.setState({pair: message});
+    public foundPair = ({userName, discussion}: PairedInitialData) => {
+        console.log(userName, discussion);
+        this.setState({pair: userName, messages: discussion.messages});
     }
 
     public pairDisconnected = () => {
