@@ -8,6 +8,7 @@ import {Chat} from '~components/chat';
 import {NoPair} from '~components/chat/noPair';
 import {Cell, IPython} from '~iPythonTypes';
 import {ToggleButton} from '~components/toggleButton';
+import {FlowChart} from '~components/flowChart';
 
 const UntoggleButton = Styled.div`
     height: 2em;
@@ -60,6 +61,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             pair: null,
             messages: [],
             selectedCells: new Set<Cell>(),
+            chatOpened: false,
         };
     }
 
@@ -152,8 +154,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
                 <UntoggleButton onClick={() => this.setToggled(false)}>Untoggle</UntoggleButton>
-                {this.state?.pair !== null ? <Chat/> :
-                    <NoPair>You haven't been paired with anyone, wait for someone to log in</NoPair>}
+                {this.state.chatOpened ? (this.state?.pair !== null ? <Chat/> :
+                    <NoPair>You haven't been paired with anyone, wait for someone to log in</NoPair>) : <FlowChart />}
             </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }
