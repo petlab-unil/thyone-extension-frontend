@@ -11,6 +11,7 @@ export interface GlobalState {
     userName: string;
     pair: string | null;
     selectedCells: Set<Cell>;
+    chatOpened: boolean;
 }
 
 export const MainContext = createContext<GlobalState>({
@@ -22,4 +23,5 @@ export const MainContext = createContext<GlobalState>({
     socket: null,
     messages: [],
     selectedCells: new Set<Cell>(),
+    chatOpened: false,
 });
