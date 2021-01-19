@@ -1,182 +1,253 @@
 import React, {ChangeEvent, Component} from 'react';
-import Tree from 'react-d3-tree';
-import {CustomNodeElementProps, RawNodeDatum, TreeNodeDatum} from 'react-d3-tree/lib/types/common';
-import {FlowChartForm, FlowChartGrid, FlowChartSVG} from './styledComponents';
+// @ts-ignore
+import Graph from 'react-graph-vis';
+import {
+    ActionButton,
+    ConnectingText,
+    FlowChartForm,
+    FlowChartGrid,
+    FlowChartSVG,
+    LonelyActionButton,
+} from './styledComponents';
+import {IPython} from '~iPythonTypes';
 
-interface FlowNode extends RawNodeDatum {
-    name: string,
-    attributes?:
-        {
-            _id: string,
-            [key: string]: string,
-        },
-    children?: FlowNode[],
+interface FlowNode {
+    id: number,
+    label: string,
+    title: string,
+}
+
+interface FlowEdge {
+    from: number,
+    to: number,
+    id?: string,
+}
+
+interface FlowGraph {
+    nodes: FlowNode[],
+    edges: FlowEdge[],
+}
+
+interface FlowChartProps {
+    iPython: IPython,
 }
 
 interface FlowChartState {
-    tree: FlowNode,
-    selected: FlowNode | null,
-    selectedParent: FlowNode | null,
+    graph: FlowGraph,
+    selectedNode: FlowNode | null,
+    selectedEdge: FlowEdge | null,
+    connecting: boolean,
 }
 
-export class FlowChart extends Component<{}, FlowChartState> {
+export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     private currentNodeId = 0;
-    private tree = {
-        name: 'root',
-        attributes: {
-            _id: (this.currentNodeId++).toString(10),
-            description: 'Beginning of the program',
-        },
-        children: [],
-    };
+    private graph: FlowGraph;
+    public state: FlowChartState;
+    private iPython: IPython;
 
-    public state: FlowChartState = {
-        tree: {...this.tree},
-        selected: null,
-        selectedParent: null,
-    };
+    constructor({iPython}: FlowChartProps) {
+        super({iPython});
+        this.iPython = iPython;
+        this.graph = this.iPython.notebook.metadata.graph ?? {
+            nodes: [
+                {
+                    id: this.currentNodeId++,
+                    label: 'Beginning of the program',
+                    title: 'root',
+                },
+            ],
+            edges: [],
+        };
+        this.currentNodeId = this.graph.nodes.reduce((current, {id}) => current > id ? current : id, -1) + 1;
+        this.state = {
+            graph: this.cloneGraph(),
+            selectedNode: null,
+            connecting: false,
+            selectedEdge: null,
+        };
+    }
+
+    public setState<K extends keyof FlowChartState>(state: ((prevState: Readonly<FlowChartState>, props: Readonly<FlowChartProps>) => (Pick<FlowChartState, K> | FlowChartState | null)) | Pick<FlowChartState, K> | FlowChartState | null, callback?: () => void): void {
+        super.setState(state, () => {
+            if (callback) callback();
+            this.iPython.notebook.metadata.graph = this.state.graph;
+        });
+    }
+
+    private cloneGraph = (): FlowGraph => {
+        return {
+            nodes: this.graph.nodes.map(({id, title, label}) => ({id, title, label})),
+            edges: this.graph.edges.map(({from, to}) => ({from, to})),
+        };
+    }
 
     /**
      *
-     * @param node - Node at the beginning of the tree to search in
      * @param searchedId - Id of wanted node
      */
-    private static findNodeAndParent = (node: FlowNode, searchedId: string): [FlowNode | null, FlowNode | null] => {
-        const id = node.attributes?._id;
-        if (id === undefined) {
-            return [null, null];
-        }
-        if (id === searchedId) return [null, node];
-        for (const child of node.children ?? []) {
-            const searched = FlowChart.findNodeAndParent(child, searchedId);
-            if (searched[1] !== null) {
-                if (searched[0] === null) {
-                    searched[0] = node;
-                }
-                return searched;
-            }
-        }
-        return [null, null];
+    private findNode = (searchedId: number): FlowNode | undefined => {
+        return this.graph.nodes.find(({id}) => id === searchedId);
     }
 
-    private static findLeaves = (node: FlowNode): FlowNode[] => {
-        if (node.children === undefined || node.children.length === 0) return [node];
-        const ret = [];
-        for (const child of node.children) {
-            ret.push(...FlowChart.findLeaves(child));
-        }
-        return ret;
-    }
-
-    private onNodeClick = (node: TreeNodeDatum) => {
-        const searchedId = node.attributes?._id;
-        if (searchedId === undefined) {
-            this.setState({selected: null});
-            return;
-        }
-        const [selectedParent, selected] = FlowChart.findNodeAndParent(this.tree, searchedId);
-        if (selected === this.state.selected) {
-            this.setState({selected: null, selectedParent: null});
+    private selectNode = async (nodeId: number) => {
+        const node = this.findNode(nodeId);
+        if (node === undefined) {
+            this.setState({selectedNode: null, connecting: false, selectedEdge: null});
         } else {
-            this.setState({selectedParent, selected});
+            await this.setState({selectedNode: node, connecting: false, selectedEdge: null});
+            const input: HTMLInputElement | null = document.querySelector('#node-description');
+            if (!input?.onfocus) input?.focus();
         }
     }
 
-    private renderNodeWithCustomEvents = ({
-                                              nodeDatum,
-                                          }: CustomNodeElementProps): JSX.Element => {
-        const _id = nodeDatum.attributes?._id;
-        const fill = (_id !== undefined && this.state.selected?.attributes?._id === _id) ? 'red' : 'black';
-        return (
-            <g>
-                <circle r="15" fill={fill} onClick={() => this.onNodeClick(nodeDatum)}/>
-                <text fill="black" strokeWidth="1" x="20">
-                    {nodeDatum.name}
-                </text>
-                {nodeDatum.attributes?.description && nodeDatum.attributes.description.length > 0 && (
-                    <text fill="black" x="20" dy="20" strokeWidth="1">
-                        {nodeDatum.attributes?.description}
-                    </text>
-                )}
-            </g>
-        );
-    }
-
-    private updateName = (e: ChangeEvent<HTMLInputElement>) => {
+    private updateLabel = (e: ChangeEvent<HTMLInputElement>) => {
         e.stopPropagation();
         e.preventDefault();
-        if (this.state.selected !== null) {
-            this.state.selected.name = e.target.value;
-            this.setState({selected: this.state.selected, tree: {...this.tree}});
-        }
-    }
-
-    private updateDescription = (e: ChangeEvent<HTMLInputElement>) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (this.state.selected !== null && this.state.selected.attributes) {
-            this.state.selected.attributes.description = e.target.value;
-            this.setState({selected: this.state.selected, tree: {...this.tree}});
-        }
-    }
-
-    private addChild = () => {
-        if (this.state.selected !== null && this.state.selected.attributes) {
-            this.state.selected.children?.push({
-                attributes: {_id: (this.currentNodeId++).toString(10), description: ''},
-                children: [],
-                name: '',
+        if (this.state.selectedNode !== null) {
+            this.state.selectedNode.label = e.target.value;
+            this.setState({
+                selectedNode: this.state.selectedNode,
+                graph: this.cloneGraph(),
             });
-            this.setState({selected: this.state.selected, tree: {...this.tree}});
         }
     }
 
-    private converge = () => {
-        if (this.state.selected === null) return;
-        const leaves = FlowChart.findLeaves(this.state.selected);
+    private addChild = async () => {
         const newNode: FlowNode = {
-            attributes: {_id: (this.currentNodeId++).toString(10)},
-            children: [],
-            name: '',
+            id: this.currentNodeId++,
+            label: '',
+            title: '',
         };
-        leaves.forEach(leave => leave.children?.push(newNode));
-        this.setState({tree: {...this.tree}});
+        this.graph.nodes.push(newNode);
+        if (this.state.selectedNode !== null) {
+            const newEdege: FlowEdge = {
+                from: this.state.selectedNode.id,
+                to: newNode.id,
+            };
+            this.graph.edges.push(newEdege);
+        }
+        await this.setState({
+            graph: this.cloneGraph(),
+        });
     }
 
     private removeNode = () => {
-        if (this.state.selectedParent && this.state.selected) {
-            const index = this.state.selectedParent.children?.indexOf(this.state.selected);
-            if (index === undefined) {
-                this.setState({selectedParent: null, selected: null, tree: {...this.tree}});
-                return;
-            }
-            this.state.selectedParent.children?.splice(index, 1);
-            this.setState({selectedParent: null, selected: null, tree: {...this.tree}});
+        if (this.state.selectedNode === null || this.state.selectedNode.id === 0) return;
+        const {id} = this.state.selectedNode;
+        this.graph.edges = this.graph.edges.filter(({from, to}) => from !== id && to !== id);
+        this.graph.nodes = this.graph.nodes.filter(node => node.id !== id);
+        this.setState({
+            graph: this.cloneGraph(),
+            selectedNode: null,
+        });
+    }
+
+    private connect = (id: number) => {
+        if (!this.state.selectedNode) {
+            this.setState({connecting: false});
+            return;
         }
+        const newEdge: FlowEdge = {
+            from: this.state.selectedNode.id,
+            to: id,
+        };
+        this.graph.edges.push(newEdge);
+        this.setState({connecting: false, graph: this.cloneGraph()});
+    }
+
+    private startConnecting = () => {
+        if (this.state.graph.nodes.length <= 1) return;
+        this.setState({connecting: true});
+    }
+
+    private deleteEdge = () => {
+        this.graph.edges = this.graph.edges.filter(({
+                                                        from,
+                                                        to,
+                                                    }) => from !== this.state.selectedEdge?.from || to !== this.state.selectedEdge?.to);
+        this.setState({selectedEdge: null, graph: this.cloneGraph()});
     }
 
     render(): React.ReactNode {
+        const events = {
+            selectNode: async ({nodes}: { nodes: number[], edges: string[] }) => {
+                if (nodes.length === 1) {
+                    const selected = nodes[0];
+                    if (this.state.connecting) {
+                        this.connect(selected);
+                    } else {
+                        await this.selectNode(selected);
+                    }
+                } else {
+                    this.setState({selectedNode: null, selectedEdge: null});
+                }
+            },
+            selectEdge: ({edges, nodes}: { nodes: number[], edges: string[] }) => {
+                if (this.state.connecting) return;
+                if (edges.length === 1 && nodes.length === 0) {
+                    const selected = edges[0];
+                    if (selected === undefined) return;
+                    const edge = this.state.graph.edges.find(({id}) => id === selected);
+                    if (edge !== undefined) {
+                        this.setState({selectedNode: null, selectedEdge: edge});
+                    } else {
+                        this.setState({selectedEdge: null});
+                    }
+                } else {
+                    this.setState({selectedEdge: null});
+                }
+            },
+            deselectNode: () => {
+                // Hack to be able to deselect when connecting, but have deselect fire after connection
+                setTimeout(() => {
+                    this.setState({selectedNode: null, connecting: false});
+                }, 100);
+            },
+        };
+
+        const options = {
+            layout: {
+                improvedLayout: true,
+                hierarchical: true,
+            },
+            edges: {
+                color: '#000000',
+            },
+            nodes: {
+                color: 'lightgrey',
+                shape: 'box',
+                shapeProperties: {
+                    borderRadius: 3,
+                },
+            },
+            height: 'calc(100% - 80px)',
+        };
+
         return <FlowChartGrid>
             <FlowChartForm>
-                {this.state.selected && <>
-                    <label htmlFor="node-name">Name</label>
-                    <input id="node-name" type="text" value={this.state.selected?.name} onChange={this.updateName}
+                {!this.state.connecting && !this.state.selectedEdge && <>
+                    <ActionButton onClick={this.addChild}>Add next step</ActionButton>
+                    <ActionButton onClick={this.startConnecting} disabled={this.state.graph.nodes.length <= 1}>Connect
+                        node</ActionButton>
+                    <ActionButton onClick={this.removeNode}
+                                  disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}>Remove
+                        step</ActionButton>
+                    <input id="node-description" type="text" value={this.state.selectedNode?.label}
+                           style={{width: 0, height: 0, border: 0, outlineWidth: 0}}
+                           onChange={this.updateLabel}
                            onKeyDown={e => e.stopPropagation()}/>
-                    <br/>
-                    <label htmlFor="node-description">Description</label>
-                    <input id="node-description" type="text" value={this.state.selected?.attributes?.description}
-                           onChange={this.updateDescription}
-                           onKeyDown={e => e.stopPropagation()}/>
-                    <br/>
-                    <button onClick={this.addChild}>Add child</button>
-                    <button onClick={this.converge}>Converge</button>
-                    {this.state.selectedParent && <button onClick={this.removeNode}>Remove node</button>}
                 </>}
+                {
+                    this.state.connecting &&
+                    <ConnectingText>Select other nodes to connect</ConnectingText>
+                }
+                {
+                    this.state.selectedEdge &&
+                    <LonelyActionButton onClick={this.deleteEdge}>Delete edge</LonelyActionButton>
+                }
             </FlowChartForm>
             <FlowChartSVG>
-                <Tree renderCustomNodeElement={(rd3tProps: CustomNodeElementProps) =>
-                    this.renderNodeWithCustomEvents({...rd3tProps})
-                } collapsible={false} data={this.state.tree} orientation={'vertical'}/>
+                <Graph graph={this.state.graph} events={events} options={options}/>
             </FlowChartSVG>
         </FlowChartGrid>;
     }

@@ -69,6 +69,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.setState({toggled});
     }
 
+    private setChat = () => {
+        this.setState({chatOpened: !this.state.chatOpened});
+    }
+
     public addMessage = (message: ChatMessage) => {
         this.setState(prev => ({...prev, messages: [...prev.messages, message]}));
     }
@@ -134,7 +138,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public componentDidMount = () => {
-        const socket = SocketIOClient(process.env.BACKEND_WS ?? '',  {
+        const socket = SocketIOClient(process.env.BACKEND_WS ?? '', {
             transportOptions: {
                 polling: {
                     extraHeaders: {
@@ -154,8 +158,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
                 <UntoggleButton onClick={() => this.setToggled(false)}>Untoggle</UntoggleButton>
+                <UntoggleButton onClick={this.setChat}>Switch chat/flowchart</UntoggleButton>
                 {this.state.chatOpened ? (this.state?.pair !== null ? <Chat/> :
-                    <NoPair>You haven't been paired with anyone, wait for someone to log in</NoPair>) : <FlowChart />}
+                    <NoPair>You haven't been paired with anyone, wait for someone to log in</NoPair>) :
+                    <FlowChart iPython={this.iPython}/>}
             </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }
