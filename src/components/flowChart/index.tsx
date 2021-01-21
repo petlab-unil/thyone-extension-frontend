@@ -3,6 +3,7 @@ import React, {ChangeEvent, Component} from 'react';
 import Graph from 'react-graph-vis';
 import {
     ActionButton,
+    ActionInput,
     ConnectingText,
     FlowChartForm,
     FlowChartGrid,
@@ -168,40 +169,36 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         this.setState({selectedEdge: null, graph: this.cloneGraph()});
     }
 
+    private clickedNode = async (selected: number) => {
+        if (this.state.connecting) {
+            this.connect(selected);
+        } else {
+            await this.selectNode(selected);
+        }
+    }
+
+    private clickedEdge = (selected: string) => {
+        if (this.state.connecting) return;
+        const edge = this.state.graph.edges.find(({id}) => id === selected);
+        if (edge !== undefined) {
+            this.setState({selectedNode: null, selectedEdge: edge});
+        } else {
+            this.setState({selectedEdge: null});
+        }
+    }
+
     render(): React.ReactNode {
         const events = {
-            selectNode: async ({nodes}: { nodes: number[], edges: string[] }) => {
+            click: async ({nodes, edges}: { nodes: number[], edges: string[] }) => {
                 if (nodes.length === 1) {
                     const selected = nodes[0];
-                    if (this.state.connecting) {
-                        this.connect(selected);
-                    } else {
-                        await this.selectNode(selected);
-                    }
+                    await this.clickedNode(selected);
+                } else if (edges.length === 1 && nodes.length === 0) {
+                    const selected = edges[0];
+                    this.clickedEdge(selected);
                 } else {
                     this.setState({selectedNode: null, selectedEdge: null});
                 }
-            },
-            selectEdge: ({edges, nodes}: { nodes: number[], edges: string[] }) => {
-                if (this.state.connecting) return;
-                if (edges.length === 1 && nodes.length === 0) {
-                    const selected = edges[0];
-                    if (selected === undefined) return;
-                    const edge = this.state.graph.edges.find(({id}) => id === selected);
-                    if (edge !== undefined) {
-                        this.setState({selectedNode: null, selectedEdge: edge});
-                    } else {
-                        this.setState({selectedEdge: null});
-                    }
-                } else {
-                    this.setState({selectedEdge: null});
-                }
-            },
-            deselectNode: () => {
-                // Hack to be able to deselect when connecting, but have deselect fire after connection
-                setTimeout(() => {
-                    this.setState({selectedNode: null, connecting: false});
-                }, 100);
             },
         };
 
@@ -232,8 +229,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
                     <ActionButton onClick={this.removeNode}
                                   disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}>Remove
                         step</ActionButton>
-                    <input id="node-description" type="text" value={this.state.selectedNode?.label}
-                           style={{width: 0, height: 0, border: 0, outlineWidth: 0}}
+                    <ActionInput id="node-description" type="text" value={this.state.selectedNode?.label}
                            onChange={this.updateLabel}
                            onKeyDown={e => e.stopPropagation()}/>
                 </>}

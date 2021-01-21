@@ -6,7 +6,7 @@ export const FlowChartGrid = Styled.div`
     display: grid;
     grid-template-columns: 100%;
     grid-row-gap: 30px;
-    grid-template-rows: 100px auto;
+    grid-template-rows: 150px auto;
 `;
 
 export const FlowChartSVG = Styled.div`
@@ -26,7 +26,7 @@ interface ActionButtonProps {
 
 export const ActionButton = Styled.div`
     width: 25%;
-    margin: 25px calc(25% / 6 - 4px);
+    margin: 25px calc(25% / 6);
     height: 48px;
     display: inline-block;
     line-height: 50px;
@@ -70,4 +70,13 @@ export const ConnectingText = Styled.div`
     text-align: center;
     border-radius: 3px;
     border: 1px solid lightgrey;
+`;
+
+export const ActionInput = Styled.input`
+    width: calc(100% - 25% / 3);
+    padding: 5px;
+    text-align: center;
+    margin-left: calc(25% / 6);
+    border: 1px solid lightgrey;
+    border-radius: 3px;
 `;
