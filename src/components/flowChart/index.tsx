@@ -9,6 +9,9 @@ import {
     FlowChartGrid,
     FlowChartSVG,
     LonelyActionButton,
+    AddNodeIcon,
+    RemoveNodeIcon,
+    ConnectNodeIcon,
 } from './styledComponents';
 import {IPython} from '~iPythonTypes';
 
@@ -211,7 +214,8 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
                 color: '#000000',
             },
             nodes: {
-                color: 'lightgrey',
+                chosen: true,
+                color: '#ff6e402b',
                 shape: 'box',
                 shapeProperties: {
                     borderRadius: 3,
@@ -223,12 +227,19 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         return <FlowChartGrid>
             <FlowChartForm>
                 {!this.state.connecting && !this.state.selectedEdge && <>
-                    <ActionButton onClick={this.addChild}>Add next step</ActionButton>
-                    <ActionButton onClick={this.startConnecting} disabled={this.state.graph.nodes.length <= 1}>Connect
-                        node</ActionButton>
+                    <ActionButton onClick={this.addChild}>
+                        <AddNodeIcon/>
+                        Add
+                    </ActionButton>
+                    <ActionButton onClick={this.startConnecting} disabled={this.state.graph.nodes.length <= 1}>
+                        <ConnectNodeIcon/>
+                        Connect
+                    </ActionButton>
                     <ActionButton onClick={this.removeNode}
-                                  disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}>Remove
-                        step</ActionButton>
+                                  disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}>
+                        <RemoveNodeIcon/>
+                        Remove
+                    </ActionButton>
                     <ActionInput id="node-description" type="text" value={this.state.selectedNode?.label}
                            onChange={this.updateLabel}
                            onKeyDown={e => e.stopPropagation()}/>

@@ -1,8 +1,24 @@
 import Styled from 'styled-components';
+import {Warning} from '@styled-icons/typicons/Warning';
 
 export const NoPair = Styled.div`
-    line-height: 40px;
-    width: 100%;
+    height: 36px;
+    line-height: 30px;
+    width: 250px;
     text-align: center;
-    background: #d9534f6b;
+    background: #f8f8f8;
+    border-radius: 100px;
+    border: 2px solid #cc444b;
+    position: relative;
+    top: 12px;
+    left: 62px;
+    color: #cc444b;
+    margin-top: 40px;
+`;
+
+export const NoPairIcon = Styled(Warning)`
+    height: 25px;
+    color: #cc444b;
+    padding: 2px;
+    margin: 2px;
 `;

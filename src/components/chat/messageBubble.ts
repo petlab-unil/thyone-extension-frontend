@@ -8,7 +8,7 @@ export const MessageBubble = Styled.div`
     max-width: 80%;
     font-size: 13px;
     display: inline-block;
-    background-color: ${({isSender}: MessageBubbleProps) => isSender ? '#017EF4' : '#EBF5FF'};
+    background-color: ${({isSender}: MessageBubbleProps) => isSender ? '#21262d' : 'rgba(239,194,179,0.17)'};
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     border-bottom-right-radius: ${({isSender}: MessageBubbleProps) => isSender ? '0px' : '10px'};

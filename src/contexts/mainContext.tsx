@@ -12,6 +12,9 @@ export interface GlobalState {
     pair: string | null;
     selectedCells: Set<Cell>;
     chatOpened: boolean;
+    setChat: (chatOpened: boolean) => void;
+    flowchartOpened: boolean;
+    setFlowchart: (flowchartOpened: boolean) => void;
 }
 
 export const MainContext = createContext<GlobalState>({
@@ -24,4 +27,9 @@ export const MainContext = createContext<GlobalState>({
     messages: [],
     selectedCells: new Set<Cell>(),
     chatOpened: false,
+    setChat: (_chatOpened: boolean) => {
+    },
+    flowchartOpened: true,
+    setFlowchart: (_flowchartOpened: boolean) => {
+    },
 });
