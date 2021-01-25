@@ -1,4 +1,37 @@
 import Styled from 'styled-components';
+import {NodePlusFill} from '@styled-icons/bootstrap/NodePlusFill';
+import {NodeMinusFill} from '@styled-icons/bootstrap/NodeMinusFill';
+import {LinearScale} from '@styled-icons/material-outlined/LinearScale';
+
+export const AddNodeIcon = Styled(NodePlusFill)`
+    height: 43px;
+    cursor: pointer;
+    padding: 2px;
+    position: relative;
+    top: 4px;
+    left: -6px;
+    vertical-align: middle;
+`;
+
+export const RemoveNodeIcon = Styled(NodeMinusFill)`
+    height: 43px;
+    cursor: pointer;
+    padding: 2px;
+    position: relative;
+    top: 4px;
+    left: -6px;
+    vertical-align: middle;
+`;
+
+export const ConnectNodeIcon = Styled(LinearScale)`
+    height: 43px;
+    cursor: pointer;
+    padding: 2px;
+    position: relative;
+    top: 4px;
+    left: 0px;
+    vertical-align: middle;
+`;
 
 export const FlowChartGrid = Styled.div`
     width: 100%;
@@ -25,13 +58,14 @@ interface ActionButtonProps {
 }
 
 export const ActionButton = Styled.div`
-    width: 25%;
-    margin: 25px calc(25% / 6);
-    height: 48px;
+    width: 60px;
+    margin: 15px calc(25% / 6);
+    height: 60px;
+    vertical-align: text-top;
     display: inline-block;
     line-height: 50px;
     text-align: center;
-    border-radius: 3px;
+    border-radius: 1000px;
     border: 1px solid lightgrey;
     ${({disabled}: ActionButtonProps) => disabled ? 'background-color: grey;' :'cursor: pointer;'}
 

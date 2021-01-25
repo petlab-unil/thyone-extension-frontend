@@ -3,10 +3,15 @@ import {MainContext} from '~contexts/mainContext';
 import Styled from 'styled-components';
 
 const DivInput = Styled.textarea`
-    background-color: white;
-    border: 1px solid black;
+    width: 100%;
+    height: 168px;
+    background-color: #F2F3F5;
+    border: 1px solid #F2F3F5;
     padding: 10px;
     resize: none;
+    position: relative;
+    border-radius: 20px;
+    cursor: text;
 `;
 
 export const ChatInput = () => {
@@ -39,6 +44,6 @@ export const ChatInput = () => {
         }
     };
 
-    return (<DivInput contentEditable={true} value={text} onKeyDown={keyDownEvent}>
-    </DivInput>);
+    return (<DivInput contentEditable={true} value={text} onKeyDown={keyDownEvent} >
+            </DivInput>);
 };

@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6f5c2f87-f546-4e03-9326-bece806f5f29" name="Default Changelist" comment="jupyterhub token">
+    <list default="true" id="6f5c2f87-f546-4e03-9326-bece806f5f29" name="Default Changelist" comment="Chat UI/UX changes (continuing)">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/chat/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/chat/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/chat/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/chat/input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/chat/messageBubble.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/chat/messageBubble.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/chat/noPair.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/chat/noPair.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/extension.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/extension.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/flowChart/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/flowChart/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/flowChart/styledComponents.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/flowChart/styledComponents.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/scrollBar.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/scrollBar.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/toggleButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/toggleButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/contexts/mainContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/contexts/mainContext.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/hec.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hec.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/iPythonTypes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/iPythonTypes.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/websocketEvents/chat/discussion.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/websocketEvents/chat/discussion.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,21 +45,23 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="js.linters.configure.manually.selectedtslint" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../hec-extension-backend" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.path.for.package.tslint" value="$USER_HOME$/.nvm/versions/node/v12.16.1/bin/node" />
-    <property name="node.js.selected.package.tslint" value="$USER_HOME$/.nvm/versions/node/v12.16.1/lib/node_modules/tslint" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.TypeScript" />
+    <property name="settings.editor.selected.configurable" value="vcs.Subversion" />
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/icon" />
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
@@ -60,7 +72,7 @@
       <scripts>
         <script value="build" />
       </scripts>
-      <node-interpreter value="$USER_HOME$/.nvm/versions/node/v12.16.1/bin/node" />
+      <node-interpreter value="$PROJECT_DIR$/../.nvm/versions/node/v12.16.1/bin/node" />
       <package-manager value="npm" />
       <envs />
       <method v="2" />
@@ -72,6 +84,9 @@
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>$PROJECT_DIR$/../.subversion</configuration>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="6f5c2f87-f546-4e03-9326-bece806f5f29" name="Default Changelist" comment="" />
@@ -82,6 +97,29 @@
       <workItem from="1608304226492" duration="8529000" />
       <workItem from="1608483488925" duration="4552000" />
       <workItem from="1608759590608" duration="14473000" />
+      <workItem from="1610146642573" duration="306000" />
+      <workItem from="1610398171324" duration="211000" />
+      <workItem from="1610445614967" duration="8449000" />
+      <workItem from="1610467454358" duration="640000" />
+      <workItem from="1610468174519" duration="383000" />
+      <workItem from="1610468649058" duration="1022000" />
+      <workItem from="1610580640687" duration="1124000" />
+      <workItem from="1610626382461" duration="179000" />
+      <workItem from="1610627084756" duration="946000" />
+      <workItem from="1610628752836" duration="1000" />
+      <workItem from="1610639460602" duration="1556000" />
+      <workItem from="1610833330848" duration="1079000" />
+      <workItem from="1610834751035" duration="659000" />
+      <workItem from="1610965202894" duration="3618000" />
+      <workItem from="1610977705210" duration="3140000" />
+      <workItem from="1610986310459" duration="1527000" />
+      <workItem from="1610992345908" duration="652000" />
+      <workItem from="1611072153697" duration="504000" />
+      <workItem from="1611147769556" duration="1951000" />
+      <workItem from="1611223721221" duration="36501000" />
+      <workItem from="1611306642757" duration="31620000" />
+      <workItem from="1611392867601" duration="609000" />
+      <workItem from="1611573843944" duration="1155000" />
     </task>
     <task id="LOCAL-00001" summary="First render">
       <created>1608312097112</created>
@@ -118,7 +156,21 @@
       <option name="project" value="LOCAL" />
       <updated>1610125219389</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Update Previous Selected Cells">
+      <created>1610468436267</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1610468436267</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Update Previous Selected Cells + UI/UX changes">
+      <created>1610640309801</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1610640309801</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -142,7 +194,10 @@
     <MESSAGE value="chat first exchanges" />
     <MESSAGE value=".env" />
     <MESSAGE value="jupyterhub token" />
-    <option name="LAST_COMMIT_MESSAGE" value="jupyterhub token" />
+    <MESSAGE value="Update Previous Selected Cells" />
+    <MESSAGE value="Update Previous Selected Cells + UI/UX changes" />
+    <MESSAGE value="Chat UI/UX changes (continuing)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Chat UI/UX changes (continuing)" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

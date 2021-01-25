@@ -8,14 +8,14 @@ export const scrollbar = `
     height: 0px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #8c8c8c;
+    background: #8c8c8c3d;
     border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: ##798b9a;
+    background: #8c8c8c8a;
 }
 ::-webkit-scrollbar-thumb:active {
-    background: #7d7d7d;
+    background: #c0c0c0;
 }
 ::-webkit-scrollbar-track {
     background: #fff;

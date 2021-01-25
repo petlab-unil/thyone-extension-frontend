@@ -5,20 +5,40 @@ import SocketIOClient from 'socket.io-client';
 import {initListeners} from '~websocketEvents/initListeners';
 import {ChatMessage, PairedInitialData} from '~websocketEvents/types';
 import {Chat} from '~components/chat';
-import {NoPair} from '~components/chat/noPair';
+import {NoPair, NoPairIcon} from '~components/chat/noPair';
 import {Cell, IPython} from '~iPythonTypes';
 import {ToggleButton} from '~components/toggleButton';
 import {FlowChart} from '~components/flowChart';
+import {Minimize} from'@styled-icons/feather/Minimize';
+import {
+    TabContainer,
+    FlowchartButton,
+    FlowchartIcon,
+    ChatButton,
+    PeerShareIcon,
+} from './tabComponents';
 
-const UntoggleButton = Styled.div`
+const MinimizeIcon = Styled(Minimize)`
+    float: right;
+    height: 20px;
+    position: relative;
+    top: 4px;
+    color: #e7e7e7;
+    cursor: pointer;
+    margin-right: 5px;
+    padding: 2.5px;
+    stroke-width: 2.3px;
+`;
+
+const UntoggleButtonContainer = Styled.div`
     height: 2em;
     line-height: 2em;
     width: 100%;
     float: right;
-    cursor: pointer;
-    background-color: #fff;
-    text-align: center;
+    background-color: #161b22;
     padding-bottom: 2px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
 `;
 
 const TOOLBAR_PRESET_NAME = 'Share Cell';
@@ -62,15 +82,21 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             messages: [],
             selectedCells: new Set<Cell>(),
             chatOpened: false,
+            setChat: this.setChat,
+            flowchartOpened: true,
+            setFlowchart: this.setFlowchart,
         };
+    }
+    private setChat = (chatFlag: boolean) => {
+        this.setState({flowchartOpened: !chatFlag, chatOpened: chatFlag});
+    }
+
+    private setFlowchart = (flowchartFlag: boolean) => {
+        this.setState({flowchartOpened: flowchartFlag, chatOpened: !flowchartFlag});
     }
 
     private setToggled = (toggled: boolean) => {
         this.setState({toggled});
-    }
-
-    private setChat = () => {
-        this.setState({chatOpened: !this.state.chatOpened});
     }
 
     public addMessage = (message: ChatMessage) => {
@@ -157,11 +183,24 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     render() {
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
-                <UntoggleButton onClick={() => this.setToggled(false)}>Untoggle</UntoggleButton>
-                <UntoggleButton onClick={this.setChat}>Switch chat/flowchart</UntoggleButton>
-                {this.state.chatOpened ? (this.state?.pair !== null ? <Chat/> :
-                    <NoPair>You haven't been paired with anyone, wait for someone to log in</NoPair>) :
-                    <FlowChart iPython={this.iPython}/>}
+                <UntoggleButtonContainer>
+                    <MinimizeIcon onClick={() => this.setToggled(false)} />
+                </UntoggleButtonContainer>
+                <TabContainer>
+                    <FlowchartButton onClick={() => this.setFlowchart(true)} flowChartenabled={this.state.flowchartOpened}>
+                        <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
+                        Flowchart
+                    </FlowchartButton>
+                    <ChatButton onClick={() => this.setChat(true)} chatEnabled={this.state.chatOpened}>
+                        <PeerShareIcon chatEnabled={this.state.chatOpened}/>
+                        Discuss
+                    </ChatButton>
+                </TabContainer>
+                {this.state.flowchartOpened ? <FlowChart iPython={this.iPython}/> : (this.state?.pair !== null ? <Chat/> :
+                    <NoPair>
+                        <NoPairIcon/>
+                        No pair availabe, please wait
+                    </NoPair>)}
             </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }

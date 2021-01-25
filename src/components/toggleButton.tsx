@@ -1,26 +1,41 @@
 import React, {useContext} from 'react';
 import {MainContext} from '~contexts/mainContext';
 import Styled from 'styled-components';
+import {Maximize} from'@styled-icons/feather/Maximize';
+
+const MaximizeIcon = Styled(Maximize)`
+    height: 2em;
+    width: 2.15em;
+    color: #fff;
+    cursor: pointer;
+    padding: 2px;
+    stroke-width: 2px;
+`;
 
 const ToggleButtonContainer = Styled.div`
         display: inline-block;
-        height: 40px;
+        height: 3em;
+        width: 3em;
         cursor: pointer;
         right: 10px;
         top: 120px;
         position: fixed;
-        background-color: #fff;
-        border: 1px solid #ababab;
-        color: black;
+        background: #010409;
+        border: 1px solid #242038;
+        color: #fff;
         z-index: 100000;
-        padding: 10px;
-        border-radius: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        align-items: center;
+        &hover: {
+            opacity: 0.5;
+    };
 `;
 
 export const ToggleButton = () => {
     const {setToggled} = useContext(MainContext);
 
     return <ToggleButtonContainer onClick={() => setToggled(true)}>
-        Toggle
+        <MaximizeIcon/>
     </ToggleButtonContainer>;
 };
