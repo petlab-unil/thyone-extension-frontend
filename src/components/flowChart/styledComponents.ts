@@ -1,36 +1,68 @@
 import Styled from 'styled-components';
-import {NodePlusFill} from '@styled-icons/bootstrap/NodePlusFill';
-import {NodeMinusFill} from '@styled-icons/bootstrap/NodeMinusFill';
+import {Add} from '@styled-icons/material/Add';
+import {Remove} from '@styled-icons/material/Remove';
 import {LinearScale} from '@styled-icons/material-outlined/LinearScale';
 
-export const AddNodeIcon = Styled(NodePlusFill)`
-    height: 43px;
+export const AddNodeIcon = Styled(Add)`
+    height: 30px;
     cursor: pointer;
+    color: #010409;
     padding: 2px;
     position: relative;
-    top: 4px;
-    left: -6px;
+    top:-2px;
+    left: -1px;
     vertical-align: middle;
 `;
 
-export const RemoveNodeIcon = Styled(NodeMinusFill)`
-    height: 43px;
+export const AddIconText = Styled.div`
+    width: 20px;
+    color: #010409;
+    padding: 2px;
+    position: relative;
+    top: -7px;
+    left: -7px;
+`;
+
+export const RemoveNodeIcon = Styled(Remove)`
+    height: 30px;
     cursor: pointer;
     padding: 2px;
     position: relative;
-    top: 4px;
-    left: -6px;
+    color: #010409;
+    top: -2px;
+    left: -1px;
     vertical-align: middle;
+    ${({disabled}: ActionButtonProps) => disabled ? 'cursor: not-allowed;' :'cursor: pointer;'}
+`;
+
+export const RemoveIconText = Styled.div`
+    width: 20px;
+    color: #010409;
+    padding: 2px;
+    position: relative;
+    top: -7px;
+    left: -7px;
 `;
 
 export const ConnectNodeIcon = Styled(LinearScale)`
-    height: 43px;
+    height: 30px;
     cursor: pointer;
     padding: 2px;
     position: relative;
-    top: 4px;
-    left: 0px;
+    color: #010409;
+    top: -2px;
+    left: -0.5px;
     vertical-align: middle;
+    ${({disabled}: ActionButtonProps) => disabled ? 'cursor: not-allowed;' :'cursor: pointer;'}
+`;
+
+export const ConnectIconText = Styled.div`
+    width: 20px;
+    color: #010409;
+    padding: 2px;
+    position: relative;
+    top: -7px;
+    left: -7px;
 `;
 
 export const FlowChartGrid = Styled.div`
@@ -47,10 +79,25 @@ export const FlowChartSVG = Styled.div`
     height: 100%;
 `;
 
+export const FlowChartButtonContainer = Styled.div`
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 105px 105px 105px;
+    grid-column-gap: 30px;
+    justify-content: space-evenly;
+    justify-items: center;
+    align-content: space-around;
+`;
+
 export const FlowChartForm = Styled.div`
     width: 100%;
     height: 100%;
-    border: 1px solid lightgrey;
+    border: 1px solid #f8f8f8;
+    display: grid;
+    grid-template-row: 50% 50%;
+    grid-row-gap: 15px;
+    background: #f8f8f8;
 `;
 
 interface ActionButtonProps {
@@ -58,41 +105,51 @@ interface ActionButtonProps {
 }
 
 export const ActionButton = Styled.div`
-    width: 60px;
+    width: 30px;
     margin: 15px calc(25% / 6);
-    height: 60px;
-    vertical-align: text-top;
+    height: 30px;
     display: inline-block;
-    line-height: 50px;
+    line-height: 30px;
     text-align: center;
     border-radius: 1000px;
     border: 1px solid lightgrey;
-    ${({disabled}: ActionButtonProps) => disabled ? 'background-color: grey;' :'cursor: pointer;'}
-
-    transition: .6s;
-
-    &:hover {
-        background-color: black;
-        color: white;
-    }
+    ${({disabled}: ActionButtonProps) => disabled ? 'background-color: #e0e0e0; cursor: not-allowed;' :'cursor: pointer; &:hover {border: 1px solid #ff6e40;}'}
 `;
 
 export const LonelyActionButton = Styled.div`
-    width: 50%;
-    margin: 25px auto;
-    height: 48px;
+    width: 30px;
+    height: 30px;
+    margin: 50px auto;
     display: block;
-    line-height: 50px;
+    line-height: 30px;
     text-align: center;
-    border-radius: 3px;
+    border-radius: 1000px;
     border: 1px solid lightgrey;
-    transition: .6s;
     cursor: pointer;
 
     &:hover {
-        background-color: black;
-        color: white;
+       border: 1px solid #ff6e40;
     }
+`;
+
+export const LonelyActionButtonIcon = Styled(Remove)`
+    height: 30px;
+    cursor: pointer;
+    padding: 2px;
+    position: relative;
+    color: #010409;
+    top: -2px;
+    left: -0.5px;
+    vertical-align: middle;
+ `;
+
+export const LonelyActionButtonIconText = Styled.div`
+    width: 150px;
+    color: #010409;
+    padding: 2px;
+    position: relative;
+    top: -7px;
+    left: -58px;
 `;
 
 export const ConnectingText = Styled.div`
@@ -100,10 +157,10 @@ export const ConnectingText = Styled.div`
     margin: 25px auto;
     height: 48px;
     display: block;
-    line-height: 50px;
+    line-height: 85px;
     text-align: center;
-    border-radius: 3px;
-    border: 1px solid lightgrey;
+    border-radius: 100px;
+    color: #ff6e40;
 `;
 
 export const ActionInput = Styled.input`
@@ -113,4 +170,6 @@ export const ActionInput = Styled.input`
     margin-left: calc(25% / 6);
     border: 1px solid lightgrey;
     border-radius: 3px;
+    position: relative;
+    bottom: 10px;
 `;
