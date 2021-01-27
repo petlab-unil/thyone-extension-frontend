@@ -67,11 +67,11 @@ export const ConnectIconText = Styled.div`
 
 export const FlowChartGrid = Styled.div`
     width: 100%;
-    height: 100%;
+    height: calc(100% - 78px);
     display: grid;
     grid-template-columns: 100%;
     grid-row-gap: 30px;
-    grid-template-rows: 150px auto;
+    grid-template-rows: 150px auto 30px;
 `;
 
 export const FlowChartSVG = Styled.div`
@@ -172,4 +172,9 @@ export const ActionInput = Styled.input`
     border-radius: 3px;
     position: relative;
     bottom: 10px;
+`;
+
+export const ShareButton = Styled.button`
+    width: 80%;
+    margin: auto;
 `;

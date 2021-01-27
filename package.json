@@ -29,7 +29,7 @@
   "scripts": {
     "tslint": "tslint -p . -c tslint.json",
     "dev": "parcel src/index.html --out-dir build/debug",
-    "build": "parcel build src/hec.js --out-dir ./hec && jupyter nbextension install hec/hec.js --user && jupyter nbextension enable hec --user"
+    "build": "parcel build src/hec.js --out-dir ./hec && sudo jupyter nbextension install hec/hec.js --sys-prefix && sudo jupyter nbextension enable hec --sys-prefix && jupyter nbextension install hec/hec.js --user && jupyter nbextension enable hec --user"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
