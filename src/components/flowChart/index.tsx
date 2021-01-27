@@ -20,6 +20,7 @@ import {
     ConnectIconText,
 } from './styledComponents';
 import {IPython} from '~iPythonTypes';
+import {options} from '~components/flowChart/config';
 
 interface FlowNode {
     id: number,
@@ -40,6 +41,7 @@ interface FlowGraph {
 
 interface FlowChartProps {
     iPython: IPython,
+    socket: SocketIOClient.Socket | null,
 }
 
 interface FlowChartState {
@@ -54,10 +56,12 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     private graph: FlowGraph;
     public state: FlowChartState;
     private iPython: IPython;
+    private socket: SocketIOClient.Socket | null;
 
-    constructor({iPython}: FlowChartProps) {
-        super({iPython});
+    constructor({iPython, socket}: FlowChartProps) {
+        super({iPython, socket});
         this.iPython = iPython;
+        this.socket = socket;
         this.graph = this.iPython.notebook.metadata.graph ?? {
             nodes: [
                 {
@@ -196,6 +200,11 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         }
     }
 
+    private shareFlowChart = () => {
+        if (this.socket === null) throw new Error('Socket is null');
+        this.socket.emit('flowChart', JSON.stringify(this.graph));
+    }
+
     render(): React.ReactNode {
         const events = {
             click: async ({nodes, edges}: { nodes: number[], edges: string[] }) => {
@@ -209,51 +218,6 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
                     this.setState({selectedNode: null, selectedEdge: null});
                 }
             },
-        };
-
-        const options = {
-            physics: {
-                enabled: true,
-                maxVelocity: 25,
-            },
-            layout: {
-                hierarchical: {
-                    enabled: true,
-                    direction: 'UD',
-                },
-            },
-            edges: {
-                color: '#161b22',
-            },
-            nodes: {
-                color: {
-                    background: '#ffe7e0',
-                    border: '#ff6e402b',
-                    highlight: {
-                        background: '#ffe7e0',
-                        border: '#ff6e40',
-                    },
-                    hover: {
-                        background: '#ffe7e0',
-                        border: '#ff6e40',
-                    },
-                },
-                heightConstraint: {
-                    minimum: 50,
-                },
-                widthConstraint: {
-                    minimum: 150,
-                },
-                shape: 'box',
-                shapeProperties: {
-                    borderRadius: 3,
-                },
-            },
-            interaction:{
-                hover: true,
-                dragNodes: true,
-            },
-            height: 'calc(100% - 80px)',
         };
 
         return <FlowChartGrid>
@@ -293,6 +257,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
             <FlowChartSVG>
                 <Graph graph={this.state.graph} events={events} options={options}/>
             </FlowChartSVG>
+            <button onClick={this.shareFlowChart}>Share flowchart</button>
         </FlowChartGrid>;
     }
 }
