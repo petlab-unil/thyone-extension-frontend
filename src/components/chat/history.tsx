@@ -26,7 +26,7 @@ const GraphContainer = Styled.div`
 
 export const ChatHistory = () => {
     const {messages, userName} = useContext(MainContext);
-    return <HistoryContainer id='hec_chat_history_container'>
+    return <HistoryContainer id="hec_chat_history_container">
         {messages.map((msg) => {
             if (msg.msgType === MsgType.Msg) {
                 return <MessageBubble key={msg.timeStamp}
