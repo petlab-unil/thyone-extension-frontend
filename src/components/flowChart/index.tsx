@@ -51,6 +51,7 @@ interface FlowChartState {
     selectedNode: FlowNode | null,
     selectedEdge: FlowEdge | null,
     connecting: boolean,
+    pair: string | null,
 }
 
 export class FlowChart extends Component<FlowChartProps, FlowChartState> {
@@ -59,13 +60,11 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     public state: FlowChartState;
     private iPython: IPython;
     private readonly socket: SocketIOClient.Socket | null;
-    private readonly pair: string | null;
 
     constructor({iPython, socket, pair}: FlowChartProps) {
         super({iPython, socket, pair});
         this.iPython = iPython;
         this.socket = socket;
-        this.pair = pair;
         this.graph = this.iPython.notebook.metadata.graph ?? {
             nodes: [
                 {
@@ -78,11 +77,16 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         };
         this.currentNodeId = this.graph.nodes.reduce((current, {id}) => current > id ? current : id, -1) + 1;
         this.state = {
+            pair,
             graph: this.cloneGraph(),
             selectedNode: null,
             connecting: false,
             selectedEdge: null,
         };
+    }
+
+    public componentWillReceiveProps({pair}: Readonly<FlowChartProps>): void {
+        this.setState({pair});
     }
 
     public setState<K extends keyof FlowChartState>(state: ((prevState: Readonly<FlowChartState>, props: Readonly<FlowChartProps>) => (Pick<FlowChartState, K> | FlowChartState | null)) | Pick<FlowChartState, K> | FlowChartState | null, callback?: () => void): void {
@@ -261,7 +265,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
             <FlowChartSVG>
                 <Graph graph={this.state.graph} events={events} options={options}/>
             </FlowChartSVG>
-            {this.pair && <ShareButton onClick={this.shareFlowChart}>Share flowchart with {this.pair}</ShareButton>}
+            {this.state.pair && <ShareButton onClick={this.shareFlowChart}>Share flowchart with {this.state.pair}</ShareButton>}
         </FlowChartGrid>;
     }
 }

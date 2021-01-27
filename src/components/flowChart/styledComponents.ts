@@ -174,7 +174,7 @@ export const ActionInput = Styled.input`
     bottom: 10px;
 `;
 
-export const ShareButton = Styled.div`
+export const ShareButton = Styled.button`
     width: 80%;
     margin: auto;
 `;

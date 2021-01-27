@@ -87,25 +87,39 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         };
     }
 
-    private setChat = (chatFlag: boolean) => {
-        this.setState({flowchartOpened: !chatFlag, chatOpened: chatFlag});
+    private setChat = async (chatFlag: boolean) => {
+        await this.setState({flowchartOpened: !chatFlag, chatOpened: chatFlag});
+        const chatElem = document.querySelector('#hec_chat_history_container');
+        if (chatElem === null) return;
+        chatElem.scrollTop = chatElem.scrollHeight;
     }
 
-    private setFlowchart = (flowchartFlag: boolean) => {
-        this.setState({flowchartOpened: flowchartFlag, chatOpened: !flowchartFlag});
+    private setFlowchart = async (flowchartFlag: boolean) => {
+        await this.setState({flowchartOpened: flowchartFlag, chatOpened: !flowchartFlag});
+        const chatElem = document.querySelector('#hec_chat_history_container');
+        if (chatElem === null) return;
+        chatElem.scrollTop = chatElem.scrollHeight;
     }
 
-    private setToggled = (toggled: boolean) => {
-        this.setState({toggled});
+    private setToggled = async (toggled: boolean) => {
+        await this.setState({toggled});
+        const chatElem = document.querySelector('#hec_chat_history_container');
+        if (chatElem === null) return;
+        chatElem.scrollTop = chatElem.scrollHeight;
     }
 
-    public addMessage = (message: ChatMessage) => {
-        this.setState(prev => ({...prev, messages: [...prev.messages, message]}));
+    public addMessage = async (message: ChatMessage) => {
+        await this.setState(prev => ({...prev, messages: [...prev.messages, message]}));
+        const chatElem = document.querySelector('#hec_chat_history_container');
+        if (chatElem === null) return;
+        chatElem.scrollTop = chatElem.scrollHeight;
     }
 
     public foundPair = ({userName, discussion}: PairedInitialData) => {
-        console.log(userName, discussion);
         this.setState({pair: userName, messages: discussion.messages});
+        const chatElem = document.querySelector('#hec_chat_history_container');
+        if (chatElem === null) return;
+        chatElem.scrollTop = chatElem.scrollHeight;
     }
 
     public pairDisconnected = () => {

@@ -6,15 +6,27 @@ import {MsgType} from '~websocketEvents/types';
 import {MessageBubble} from '~components/chat/messageBubble';
 // @ts-ignore
 import Graph from 'react-graph-vis';
+import {options} from '~components/flowChart/config';
 
 const HistoryContainer = Styled.div`
     overflow-y: auto;
+    overflow-x: hidden;
     ${scrollbar}
+`;
+
+const GraphContainer = Styled.div`
+    height: 450px;
+    width: 90%;
+    margin: auto;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    margin: 20px;
+    display: inline-block;
 `;
 
 export const ChatHistory = () => {
     const {messages, userName} = useContext(MainContext);
-    return <HistoryContainer>
+    return <HistoryContainer id='hec_chat_history_container'>
         {messages.map((msg) => {
             if (msg.msgType === MsgType.Msg) {
                 return <MessageBubble key={msg.timeStamp}
@@ -24,7 +36,7 @@ export const ChatHistory = () => {
                 return <div dangerouslySetInnerHTML={{__html: msg.content}}/>;
             }
             if (msg.msgType === MsgType.FlowChart) {
-                return <Graph graph={JSON.parse(msg.content)}/>;
+                return <GraphContainer><Graph graph={JSON.parse(msg.content)} options={options}/></GraphContainer>;
             }
             throw new Error('Invalid msgtype');
         })
