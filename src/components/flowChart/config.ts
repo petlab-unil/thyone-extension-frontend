@@ -1,18 +1,44 @@
 export const options = {
+    physics: {
+        enabled: true,
+        maxVelocity: 25,
+    },
     layout: {
-        improvedLayout: true,
-        hierarchical: true,
+        hierarchical: {
+            enabled: true,
+            direction: 'UD',
+        },
     },
     edges: {
-        color: '#000000',
+        color: '#161b22',
     },
     nodes: {
-        chosen: true,
-        color: '#ff6e402b',
+        color: {
+            background: '#ffe7e0',
+            border: '#ff6e402b',
+            highlight: {
+                background: '#ffe7e0',
+                border: '#ff6e40',
+            },
+            hover: {
+                background: '#ffe7e0',
+                border: '#ff6e40',
+            },
+        },
+        heightConstraint: {
+            minimum: 50,
+        },
+        widthConstraint: {
+            minimum: 150,
+        },
         shape: 'box',
         shapeProperties: {
             borderRadius: 3,
         },
+    },
+    interaction:{
+        hover: true,
+        dragNodes: true,
     },
     height: 'calc(100% - 80px)',
 };

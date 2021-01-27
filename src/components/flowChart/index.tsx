@@ -6,12 +6,18 @@ import {
     ActionInput,
     ConnectingText,
     FlowChartForm,
+    FlowChartButtonContainer,
     FlowChartGrid,
     FlowChartSVG,
     LonelyActionButton,
+    LonelyActionButtonIcon,
+    LonelyActionButtonIconText,
     AddNodeIcon,
     RemoveNodeIcon,
     ConnectNodeIcon,
+    AddIconText,
+    RemoveIconText,
+    ConnectIconText,
 } from './styledComponents';
 import {IPython} from '~iPythonTypes';
 import {options} from '~components/flowChart/config';
@@ -217,30 +223,35 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         return <FlowChartGrid>
             <FlowChartForm>
                 {!this.state.connecting && !this.state.selectedEdge && <>
-                    <ActionButton onClick={this.addChild}>
-                        <AddNodeIcon/>
-                        Add
-                    </ActionButton>
-                    <ActionButton onClick={this.startConnecting} disabled={this.state.graph.nodes.length <= 1}>
-                        <ConnectNodeIcon/>
-                        Connect
-                    </ActionButton>
-                    <ActionButton onClick={this.removeNode}
-                                  disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}>
-                        <RemoveNodeIcon/>
-                        Remove
-                    </ActionButton>
+                    <FlowChartButtonContainer>
+                        <ActionButton onClick={this.addChild}>
+                            <AddNodeIcon/>
+                            <AddIconText>Create</AddIconText>
+                        </ActionButton>
+                        <ActionButton onClick={this.startConnecting} disabled={this.state.graph.nodes.length <= 1}>
+                            <ConnectNodeIcon disabled={this.state.graph.nodes.length <= 1}/>
+                            <ConnectIconText>Connect</ConnectIconText>
+                        </ActionButton>
+                        <ActionButton onClick={this.removeNode}
+                                      disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}>
+                            <RemoveNodeIcon disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}/>
+                            <RemoveIconText>Remove</RemoveIconText>
+                        </ActionButton>
+                    </FlowChartButtonContainer>
                     <ActionInput id="node-description" type="text" value={this.state.selectedNode?.label}
                            onChange={this.updateLabel}
                            onKeyDown={e => e.stopPropagation()}/>
                 </>}
                 {
                     this.state.connecting &&
-                    <ConnectingText>Select other nodes to connect</ConnectingText>
+                    <ConnectingText>Select a node to connect</ConnectingText>
                 }
                 {
                     this.state.selectedEdge &&
-                    <LonelyActionButton onClick={this.deleteEdge}>Delete edge</LonelyActionButton>
+                    <LonelyActionButton onClick={this.deleteEdge}>
+                        <LonelyActionButtonIcon/>
+                        <LonelyActionButtonIconText>Delete edge</LonelyActionButtonIconText>
+                    </LonelyActionButton>
                 }
             </FlowChartForm>
             <FlowChartSVG>

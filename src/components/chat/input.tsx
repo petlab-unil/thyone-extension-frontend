@@ -10,6 +10,7 @@ const DivInput = Styled.textarea`
     padding: 10px;
     resize: none;
     position: relative;
+    bottom: 10px;
     border-radius: 20px;
     cursor: text;
 `;
@@ -44,6 +45,6 @@ export const ChatInput = () => {
         }
     };
 
-    return (<DivInput contentEditable={true} value={text} onKeyDown={keyDownEvent} >
+    return (<DivInput contentEditable={true} value={text} onKeyDown={keyDownEvent} placeholder={'Chat here. . .'}>
             </DivInput>);
 };
