@@ -4,6 +4,8 @@ import Styled from 'styled-components';
 import {scrollbar} from '~components/scrollBar';
 import {MsgType} from '~websocketEvents/types';
 import {MessageBubble} from '~components/chat/messageBubble';
+// @ts-ignore
+import Graph from 'react-graph-vis';
 
 const HistoryContainer = Styled.div`
     overflow-y: auto;
@@ -20,6 +22,9 @@ export const ChatHistory = () => {
             }
             if (msg.msgType === MsgType.Cell) {
                 return <div dangerouslySetInnerHTML={{__html: msg.content}}/>;
+            }
+            if (msg.msgType === MsgType.FlowChart) {
+                return <Graph graph={JSON.parse(msg.content)}/>;
             }
             throw new Error('Invalid msgtype');
         })
