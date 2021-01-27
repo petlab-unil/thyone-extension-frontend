@@ -19,3 +19,12 @@ export const MessageBubble = Styled.div`
     float: ${({isSender}: MessageBubbleProps) => isSender ? 'right' : 'left'};
     clear: both;
 `;
+
+export const CellContainer = Styled.div`
+    margin: 20px 0;
+    width: calc(100% - 25px);
+     ${({isSender}: MessageBubbleProps) => isSender ? 'margin-left: 20px' : 'margin-right: 20px'};
+     & .CodeMirror {
+        font-size: 12px;
+     }
+`;

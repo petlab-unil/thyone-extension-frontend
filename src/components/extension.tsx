@@ -163,8 +163,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
-                const {outerHTML} = cell.element[0];
-                this.state.socket?.emit('cell', outerHTML);
+                const cellContent = cell.element[0].querySelector('.inner_cell');
+                if (cellContent === null) throw new Error('Cell content does not exist');
+                const {innerHTML} = cellContent;
+                this.state.socket?.emit('cell', innerHTML);
             });
         };
 
