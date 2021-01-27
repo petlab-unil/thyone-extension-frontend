@@ -9,7 +9,7 @@ import {NoPair, NoPairIcon} from '~components/chat/noPair';
 import {Cell, IPython} from '~iPythonTypes';
 import {ToggleButton} from '~components/toggleButton';
 import {FlowChart} from '~components/flowChart';
-import {Minimize} from'@styled-icons/feather/Minimize';
+import {Minimize} from '@styled-icons/feather/Minimize';
 import {
     TabContainer,
     FlowchartButton,
@@ -87,6 +87,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             setFlowchart: this.setFlowchart,
         };
     }
+
     private setChat = (chatFlag: boolean) => {
         this.setState({flowchartOpened: !chatFlag, chatOpened: chatFlag});
     }
@@ -184,10 +185,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
                 <UntoggleButtonContainer>
-                    <MinimizeIcon onClick={() => this.setToggled(false)} />
+                    <MinimizeIcon onClick={() => this.setToggled(false)}/>
                 </UntoggleButtonContainer>
                 <TabContainer>
-                    <FlowchartButton onClick={() => this.setFlowchart(true)} flowChartenabled={this.state.flowchartOpened}>
+                    <FlowchartButton onClick={() => this.setFlowchart(true)}
+                                     flowChartenabled={this.state.flowchartOpened}>
                         <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
                         Flowchart
                     </FlowchartButton>
@@ -196,11 +198,13 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                         Discuss
                     </ChatButton>
                 </TabContainer>
-                {this.state.flowchartOpened ? <FlowChart iPython={this.iPython}/> : (this.state?.pair !== null ? <Chat/> :
-                    <NoPair>
-                        <NoPairIcon/>
-                        No pair availabe, please wait
-                    </NoPair>)}
+                {this.state.flowchartOpened ?
+                    <FlowChart iPython={this.iPython} socket={this.state.socket}/> : (this.state?.pair !== null ?
+                        <Chat/> :
+                        <NoPair>
+                            <NoPairIcon/>
+                            No pair availabe, please wait
+                        </NoPair>)}
             </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }
