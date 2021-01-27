@@ -18,6 +18,7 @@ import {
     AddIconText,
     RemoveIconText,
     ConnectIconText,
+    ShareButton,
 } from './styledComponents';
 import {IPython} from '~iPythonTypes';
 import {options} from '~components/flowChart/config';
@@ -42,6 +43,7 @@ interface FlowGraph {
 interface FlowChartProps {
     iPython: IPython,
     socket: SocketIOClient.Socket | null,
+    pair: string | null,
 }
 
 interface FlowChartState {
@@ -53,15 +55,17 @@ interface FlowChartState {
 
 export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     private currentNodeId = 0;
-    private graph: FlowGraph;
+    private readonly graph: FlowGraph;
     public state: FlowChartState;
     private iPython: IPython;
-    private socket: SocketIOClient.Socket | null;
+    private readonly socket: SocketIOClient.Socket | null;
+    private readonly pair: string | null;
 
-    constructor({iPython, socket}: FlowChartProps) {
-        super({iPython, socket});
+    constructor({iPython, socket, pair}: FlowChartProps) {
+        super({iPython, socket, pair});
         this.iPython = iPython;
         this.socket = socket;
+        this.pair = pair;
         this.graph = this.iPython.notebook.metadata.graph ?? {
             nodes: [
                 {
@@ -257,7 +261,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
             <FlowChartSVG>
                 <Graph graph={this.state.graph} events={events} options={options}/>
             </FlowChartSVG>
-            <button onClick={this.shareFlowChart}>Share flowchart</button>
+            {this.pair && <ShareButton onClick={this.shareFlowChart}>Share flowchart with {this.pair}</ShareButton>}
         </FlowChartGrid>;
     }
 }

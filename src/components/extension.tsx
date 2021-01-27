@@ -53,7 +53,6 @@ const SideBarContainer = Styled.div`
     border: 1px solid #ababab;
     color: #000000;
     z-index: 100000;
-    padding: 10px;
     border-radius: 10px;
 `;
 
@@ -199,7 +198,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                     </ChatButton>
                 </TabContainer>
                 {this.state.flowchartOpened ?
-                    <FlowChart iPython={this.iPython} socket={this.state.socket}/> : (this.state?.pair !== null ?
+                    <FlowChart pair={this.state.pair} iPython={this.iPython}
+                               socket={this.state.socket}/> : (this.state?.pair !== null ?
                         <Chat/> :
                         <NoPair>
                             <NoPairIcon/>
