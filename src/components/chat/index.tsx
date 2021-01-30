@@ -17,7 +17,7 @@ const ChatContainer = Styled.div`
     height: 100%;
     display: grid;
     grid-template-rows: 40px 40fr 20fr;
-    grid-template-colums: 100%;
+    grid-template-columns: 100%;
     grid-row-gap: 20px;
 `;
 
