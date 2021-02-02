@@ -7,7 +7,9 @@ import {
     ConnectingText,
     FlowChartForm,
     FlowChartButtonContainer,
+    EdgeActionButtonContainer,
     FlowChartGrid,
+    EdgeActionInput,
     FlowChartSVG,
     LonelyActionButton,
     LonelyActionButtonIcon,
@@ -18,7 +20,8 @@ import {
     AddIconText,
     RemoveIconText,
     ConnectIconText,
-    ShareButton,
+    FlowchartShareButton,
+    FlowchartShareIcon,
 } from './styledComponents';
 import {IPython} from '~iPythonTypes';
 import {options} from '~components/flowChart/config';
@@ -32,6 +35,7 @@ interface FlowNode {
 interface FlowEdge {
     from: number,
     to: number,
+    label: string,
     id?: string,
 }
 
@@ -99,7 +103,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     private cloneGraph = (): FlowGraph => {
         return {
             nodes: this.graph.nodes.map(({id, title, label}) => ({id, title, label})),
-            edges: this.graph.edges.map(({from, to}) => ({from, to})),
+            edges: this.graph.edges.map(({from, to, label}) => ({from, to, label})),
         };
     }
 
@@ -134,6 +138,33 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         }
     }
 
+    private updateEdgeTitle = (e: ChangeEvent<HTMLInputElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (this.state.selectedEdge !== null) {
+            const {selectedEdge} = this.state;
+            if (selectedEdge === null) {
+                this.setState({
+                    selectedEdge: null,
+                });
+                return;
+            }
+            const graphEdge = this.graph.edges.find(({from, to}) => from === selectedEdge.from && selectedEdge.to);
+            if (graphEdge === undefined) {
+                this.setState({
+                    selectedEdge: null,
+                });
+                return;
+            }
+            graphEdge.label = e.target.value.toString();
+            this.state.selectedEdge.label = e.target.value.toString();
+            this.setState({
+                selectedEdge: this.state.selectedEdge,
+                graph: this.cloneGraph(),
+            });
+        }
+    }
+
     private addChild = async () => {
         const newNode: FlowNode = {
             id: this.currentNodeId++,
@@ -142,11 +173,12 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         };
         this.graph.nodes.push(newNode);
         if (this.state.selectedNode !== null) {
-            const newEdege: FlowEdge = {
+            const newEdge: FlowEdge = {
                 from: this.state.selectedNode.id,
                 to: newNode.id,
+                label: '',
             };
-            this.graph.edges.push(newEdege);
+            this.graph.edges.push(newEdge);
         }
         await this.setState({
             graph: this.cloneGraph(),
@@ -172,6 +204,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         const newEdge: FlowEdge = {
             from: this.state.selectedNode.id,
             to: id,
+            label: '',
         };
         this.graph.edges.push(newEdge);
         this.setState({connecting: false, graph: this.cloneGraph()});
@@ -180,6 +213,12 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     private startConnecting = () => {
         if (this.state.graph.nodes.length <= 1) return;
         this.setState({connecting: true});
+    }
+
+    private stopConnecting = () => {
+        if (this.state.graph.nodes.length <= 1) return;
+        this.setState({connecting:false});
+
     }
 
     private deleteEdge = () => {
@@ -203,6 +242,8 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         const edge = this.state.graph.edges.find(({id}) => id === selected);
         if (edge !== undefined) {
             this.setState({selectedNode: null, selectedEdge: edge});
+            const input: HTMLInputElement | null = document.querySelector('#node-description');
+            if (!input?.onfocus) input?.focus();
         } else {
             this.setState({selectedEdge: null});
         }
@@ -224,21 +265,25 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
                     this.clickedEdge(selected);
                 } else {
                     this.setState({selectedNode: null, selectedEdge: null});
+                    if (this.state.connecting && !this.state.selectedNode) {
+                        this.stopConnecting();
+                    }
                 }
             },
         };
 
         return <FlowChartGrid>
             <FlowChartForm>
-                {!this.state.connecting && !this.state.selectedEdge && <>
+                { !this.state.selectedEdge && <>
                     <FlowChartButtonContainer>
                         <ActionButton onClick={this.addChild}>
                             <AddNodeIcon/>
                             <AddIconText>Create</AddIconText>
                         </ActionButton>
-                        <ActionButton onClick={this.startConnecting} disabled={this.state.graph.nodes.length <= 1}>
-                            <ConnectNodeIcon disabled={this.state.graph.nodes.length <= 1}/>
-                            <ConnectIconText>Connect</ConnectIconText>
+                        <ActionButton onClick={this.startConnecting}
+                                      disabled={this.state.graph.nodes.length <= 1 || !this.state.selectedNode}>
+                            <ConnectNodeIcon disabled={this.state.graph.nodes.length <= 1 || !this.state.selectedNode}/>
+                            <ConnectIconText>Link</ConnectIconText>
                         </ActionButton>
                         <ActionButton onClick={this.removeNode}
                                       disabled={!this.state.selectedNode || this.state.selectedNode.id === 0}>
@@ -246,26 +291,33 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
                             <RemoveIconText>Remove</RemoveIconText>
                         </ActionButton>
                     </FlowChartButtonContainer>
-                    <ActionInput id="node-description" type="text" value={this.state.selectedNode?.label}
+                    <ActionInput id="node-description" type="text"
+                                 value={!this.state.selectedNode ? '' : this.state.selectedNode?.label}
                            onChange={this.updateLabel}
-                           onKeyDown={e => e.stopPropagation()}/>
+                           onKeyDown={e => e.stopPropagation()} placeholder={'Select node to write description'}/>
+                    <ConnectingText isVisible={this.state.connecting}>Select a node to link with</ConnectingText>
                 </>}
                 {
-                    this.state.connecting &&
-                    <ConnectingText>Select a node to connect</ConnectingText>
-                }
-                {
-                    this.state.selectedEdge &&
-                    <LonelyActionButton onClick={this.deleteEdge}>
-                        <LonelyActionButtonIcon/>
-                        <LonelyActionButtonIconText>Delete edge</LonelyActionButtonIconText>
-                    </LonelyActionButton>
+                    this.state.selectedEdge && <>
+                        <EdgeActionButtonContainer>
+                            <LonelyActionButton onClick={this.deleteEdge}>
+                                <LonelyActionButtonIcon/>
+                                <LonelyActionButtonIconText>Delete edge</LonelyActionButtonIconText>
+                            </LonelyActionButton>
+                            <EdgeActionInput id="node-description" type="text" value={this.state.selectedEdge.label}
+                                         onChange={this.updateEdgeTitle}
+                                         onKeyDown={e => e.stopPropagation()} placeholder={'Write edge description here'}/>
+                        </EdgeActionButtonContainer>
+                    </>
                 }
             </FlowChartForm>
             <FlowChartSVG>
                 <Graph graph={this.state.graph} events={events} options={options}/>
             </FlowChartSVG>
-            {this.state.pair && <ShareButton onClick={this.shareFlowChart}>Share flowchart with {this.state.pair}</ShareButton>}
+            {this.state.pair &&
+            <FlowchartShareButton onClick={this.shareFlowChart}>
+                <FlowchartShareIcon/> Share flowchart with {this.state.pair}
+            </FlowchartShareButton>}
         </FlowChartGrid>;
     }
 }

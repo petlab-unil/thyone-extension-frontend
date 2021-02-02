@@ -12,6 +12,7 @@ const HistoryContainer = Styled.div`
     overflow-y: auto;
     overflow-x: hidden;
     ${scrollbar}
+    padding: 10px;
 `;
 
 const GraphContainer = Styled.div`

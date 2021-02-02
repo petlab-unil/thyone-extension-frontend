@@ -1,23 +1,26 @@
 export const options = {
-    physics: {
-        enabled: true,
-        maxVelocity: 25,
+    physics:{
+        enabled: false,
     },
     layout: {
         hierarchical: {
             enabled: true,
-            direction: 'UD',
         },
     },
     edges: {
         color: '#161b22',
+        smooth: true,
+        font:{
+            align: 'horizontal',
+            vadjust: 40,
+        },
     },
     nodes: {
         color: {
             background: '#ffe7e0',
             border: '#ff6e402b',
             highlight: {
-                background: '#ffe7e0',
+                background: '#ffd1c3',
                 border: '#ff6e40',
             },
             hover: {
@@ -40,5 +43,5 @@ export const options = {
         hover: true,
         dragNodes: true,
     },
-    height: 'calc(100% - 80px)',
+    height: 'calc(100% - 15px)',
 };
