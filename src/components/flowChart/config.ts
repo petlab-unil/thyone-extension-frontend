@@ -4,15 +4,16 @@ export const options = {
     },
     layout: {
         hierarchical: {
-            enabled: true,
+            direction: 'UD',
         },
     },
     edges: {
         color: '#161b22',
         smooth: true,
+        selfReferenceSize: 40,
         font:{
             align: 'horizontal',
-            vadjust: 40,
+            vadjust: 38,
         },
     },
     nodes: {
