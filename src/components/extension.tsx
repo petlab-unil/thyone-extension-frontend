@@ -163,10 +163,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
-                const cellContent = cell.element[0].querySelector('.inner_cell');
+                const cellContent = cell.element[0];
                 if (cellContent === null) throw new Error('Cell content does not exist');
-                const {innerHTML} = cellContent;
-                this.state.socket?.emit('cell', innerHTML);
+                const {outerHTML} = cellContent;
+                this.state.socket?.emit('cell', outerHTML);
             });
         };
 
@@ -199,29 +199,29 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     render() {
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
-                <UntoggleButtonContainer>
-                    <MinimizeIcon onClick={() => this.setToggled(false)}/>
-                </UntoggleButtonContainer>
-                <TabContainer>
-                    <FlowchartButton onClick={() => this.setFlowchart(true)}
-                                     flowChartenabled={this.state.flowchartOpened}>
-                        <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
-                        Flowchart
-                    </FlowchartButton>
-                    <ChatButton onClick={() => this.setChat(true)} chatEnabled={this.state.chatOpened}>
-                        <PeerShareIcon chatEnabled={this.state.chatOpened}/>
-                        Discuss
-                    </ChatButton>
-                </TabContainer>
-                {this.state.flowchartOpened ?
-                    <FlowChart pair={this.state.pair} iPython={this.iPython}
-                               socket={this.state.socket}/> : (this.state?.pair !== null ?
-                        <Chat/> :
-                        <NoPair>
-                            <NoPairIcon/>
-                            No pair availabe, please wait
-                        </NoPair>)}
-            </SideBarContainer> : <ToggleButton/>}
+                    <UntoggleButtonContainer>
+                        <MinimizeIcon onClick={() => this.setToggled(false)}/>
+                    </UntoggleButtonContainer>
+                    <TabContainer>
+                        <FlowchartButton onClick={() => this.setFlowchart(true)}
+                                         flowChartenabled={this.state.flowchartOpened}>
+                            <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
+                            Flowchart
+                        </FlowchartButton>
+                        <ChatButton onClick={() => this.setChat(true)} chatEnabled={this.state.chatOpened}>
+                            <PeerShareIcon chatEnabled={this.state.chatOpened}/>
+                            Discuss
+                        </ChatButton>
+                    </TabContainer>
+                    {this.state.flowchartOpened ?
+                        <FlowChart pair={this.state.pair} iPython={this.iPython}
+                                   socket={this.state.socket}/> : (this.state?.pair !== null ?
+                            <Chat/> :
+                            <NoPair>
+                                <NoPairIcon/>
+                                No pair availabe, please wait
+                            </NoPair>)}
+                </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }
 }

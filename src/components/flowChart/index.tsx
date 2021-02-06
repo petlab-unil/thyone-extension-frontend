@@ -149,7 +149,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
                 });
                 return;
             }
-            const graphEdge = this.graph.edges.find(({from, to}) => from === selectedEdge.from && selectedEdge.to);
+            const graphEdge = this.graph.edges.find(({from, to}) => from === selectedEdge.from && to === selectedEdge.to);
             if (graphEdge === undefined) {
                 this.setState({
                     selectedEdge: null,
@@ -293,7 +293,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
                     </FlowChartButtonContainer>
                     <ActionInput id="node-description" type="text"
                                  value={!this.state.selectedNode ? '' : this.state.selectedNode?.label}
-                           onChange={this.updateLabel}
+                                 onChange={this.updateLabel}
                            onKeyDown={e => e.stopPropagation()} placeholder={'Select node to write description'}/>
                     <ConnectingText isVisible={this.state.connecting}>Select a node to link with</ConnectingText>
                 </>}
