@@ -10,13 +10,8 @@ import {Cell, IPython} from '~iPythonTypes';
 import {ToggleButton} from '~components/toggleButton';
 import {FlowChart} from '~components/flowChart';
 import {Minimize} from '@styled-icons/feather/Minimize';
-import {
-    TabContainer,
-    FlowchartButton,
-    FlowchartIcon,
-    ChatButton,
-    PeerShareIcon,
-} from './tabComponents';
+import {ChatButton, FlowchartButton, FlowchartIcon, PeerShareIcon, TabContainer} from './tabComponents';
+import {EventTypes, LoggingApi} from '~loggingApi';
 
 const MinimizeIcon = Styled(Minimize)`
     float: right;
@@ -58,19 +53,25 @@ const SideBarContainer = Styled.div`
 
 interface ExtensionProps {
     iPython: IPython,
+    cell: any,
     userName: string,
-    token: string
+    token: string,
+    loggingApi: LoggingApi,
 }
 
 export class Extension extends Component<ExtensionProps, GlobalState> {
     state: GlobalState;
     private readonly iPython: IPython;
     private readonly token: string;
+    private readonly loggingApi: LoggingApi;
+    private readonly cell: any;
 
     constructor(props: ExtensionProps) {
         super(props);
         this.iPython = props.iPython;
         this.token = props.token;
+        this.loggingApi = props.loggingApi;
+        this.cell = props.cell;
 
         this.state = {
             userName: props.userName,
@@ -84,6 +85,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             setChat: this.setChat,
             flowchartOpened: true,
             setFlowchart: this.setFlowchart,
+            accepted: false,
         };
     }
 
@@ -104,8 +106,20 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private setToggled = async (toggled: boolean) => {
         await this.setState({toggled});
         const chatElem = document.querySelector('#hec_chat_history_container');
-        if (chatElem === null) return;
+        if (chatElem === null) {
+            if (toggled) {
+                await this.loggingApi.logEvent(EventTypes.EXTENSION_TOGGLED);
+            } else {
+                await this.loggingApi.logEvent(EventTypes.EXTENSION_UNTOGGLED);
+            }
+            return;
+        }
         chatElem.scrollTop = chatElem.scrollHeight;
+        if (toggled) {
+            await this.loggingApi.logEvent(EventTypes.EXTENSION_TOGGLED);
+        } else {
+            await this.loggingApi.logEvent(EventTypes.EXTENSION_UNTOGGLED);
+        }
     }
 
     public addMessage = async (message: ChatMessage) => {
@@ -124,6 +138,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public pairDisconnected = () => {
         this.setState({pair: null, messages: []});
+    }
+
+    public setAccepted = (accepted: boolean) => {
+        this.setState({accepted});
     }
 
     private registerCellToolbar = () => {
@@ -160,6 +178,43 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.setState({selectedCells: new Set(this.iPython.notebook.get_cells().filter(cell => cell.metadata.hecSelected))});
     }
 
+    private setCallbacks = () => {
+        // tslint:disable-next-line:no-this-assignment
+        const self = this;
+        this.iPython.notebook.get_cells().forEach((cell: any) => {
+            const execute = cell.execute;
+            let timeoutLog: number;
+            cell.input.onchange = () => {
+                clearTimeout(timeoutLog);
+                timeoutLog = setTimeout(() => {
+                    self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
+                }, 2000);
+            };
+            cell.execute = async () => {
+                execute.apply(cell);
+                await self.loggingApi.logEvent(EventTypes.CELL_EXECUTED);
+            };
+        });
+
+        const create_element = this.cell.prototype.create_element;
+        this.cell.prototype.create_element = function () {
+            create_element.apply(this);
+            self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {});
+            let timeoutLog: number;
+            this.input.onchange = () => {
+                clearTimeout(timeoutLog);
+                timeoutLog = setTimeout(() => {
+                    self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
+                }, 2000);
+            };
+            const execute = this.execute;
+            this.execute = async function () {
+                execute.apply(this);
+                await self.loggingApi.logEvent(EventTypes.CELL_EXECUTED);
+            };
+        };
+    }
+
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
@@ -191,12 +246,17 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         });
         initListeners(socket, this);
         this.updatePreviousSelectedCells();
+        this.setCallbacks();
         this.registerCellToolbar();
         this.initJupyterBindings();
         this.setState({socket});
+        window.onbeforeunload = async () => {
+            await this.loggingApi.logEvent(EventTypes.NOTEBOOK_CLOSED);
+        };
     }
 
     render() {
+        if (!this.state.accepted) return <></>;
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
                     <UntoggleButtonContainer>
@@ -214,7 +274,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                         </ChatButton>
                     </TabContainer>
                     {this.state.flowchartOpened ?
-                        <FlowChart pair={this.state.pair} iPython={this.iPython}
+                        <FlowChart pair={this.state.pair} iPython={this.iPython} loggingApi={this.loggingApi}
                                    socket={this.state.socket}/> : (this.state?.pair !== null ?
                             <Chat/> :
                             <NoPair>

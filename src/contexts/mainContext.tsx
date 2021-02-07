@@ -15,6 +15,7 @@ export interface GlobalState {
     setChat: (chatOpened: boolean) => void;
     flowchartOpened: boolean;
     setFlowchart: (flowchartOpened: boolean) => void;
+    accepted: boolean;
 }
 
 export const MainContext = createContext<GlobalState>({
@@ -32,4 +33,5 @@ export const MainContext = createContext<GlobalState>({
     flowchartOpened: true,
     setFlowchart: (_flowchartOpened: boolean) => {
     },
+    accepted: false,
 });
