@@ -5,15 +5,19 @@ export const options = {
     layout: {
         hierarchical: {
             direction: 'UD',
+            sortMethod: 'hubsize',
         },
     },
     edges: {
         color: '#161b22',
-        smooth: true,
-        selfReferenceSize: 40,
+        smooth: {
+            enabled: true,
+            forceDirection: true,
+        },
+        selfReferenceSize:30,
         font:{
             align: 'horizontal',
-            vadjust: 38,
+            vadjust: 30,
         },
     },
     nodes: {
