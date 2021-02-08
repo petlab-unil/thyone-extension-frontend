@@ -12,3 +12,7 @@ export const onPair = (extension: Extension) => (message: PairedInitialData) => 
 export const onPairDisconnected = (extension: Extension) => () => {
     extension.pairDisconnected();
 };
+
+export const isAccepted = (extension: Extension) => (accepted: boolean) => {
+    extension.isAccepted(accepted);
+};

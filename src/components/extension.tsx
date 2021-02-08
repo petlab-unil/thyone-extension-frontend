@@ -73,6 +73,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.token = props.token;
 
         this.state = {
+            accepted: false,
             userName: props.userName,
             toggled: true,
             setToggled: this.setToggled,
@@ -124,6 +125,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public pairDisconnected = () => {
         this.setState({pair: null, messages: []});
+    }
+
+    public isAccepted = (accepted : boolean) => {
+        this.setState({accepted});
     }
 
     private registerCellToolbar = () => {
@@ -198,30 +203,30 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     render() {
         return <MainContext.Provider value={this.state}>
-            {this.state.toggled ? <SideBarContainer>
-                    <UntoggleButtonContainer>
-                        <MinimizeIcon onClick={() => this.setToggled(false)}/>
-                    </UntoggleButtonContainer>
-                    <TabContainer>
-                        <FlowchartButton onClick={() => this.setFlowchart(true)}
-                                         flowChartenabled={this.state.flowchartOpened}>
-                            <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
-                            Flowchart
-                        </FlowchartButton>
-                        <ChatButton onClick={() => this.setChat(true)} chatEnabled={this.state.chatOpened}>
-                            <PeerShareIcon chatEnabled={this.state.chatOpened}/>
-                            Discuss
-                        </ChatButton>
-                    </TabContainer>
-                    {this.state.flowchartOpened ?
-                        <FlowChart pair={this.state.pair} iPython={this.iPython}
-                                   socket={this.state.socket}/> : (this.state?.pair !== null ?
-                            <Chat/> :
-                            <NoPair>
-                                <NoPairIcon/>
-                                No pair availabe, please wait
-                            </NoPair>)}
-                </SideBarContainer> : <ToggleButton/>}
+            {this.state.accepted ? <>{this.state.toggled ? <SideBarContainer>
+                <UntoggleButtonContainer>
+                    <MinimizeIcon onClick={() => this.setToggled(false)}/>
+                </UntoggleButtonContainer>
+                <TabContainer>
+                    <FlowchartButton onClick={() => this.setFlowchart(true)}
+                                     flowChartenabled={this.state.flowchartOpened}>
+                        <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
+                        Flowchart
+                    </FlowchartButton>
+                    <ChatButton onClick={() => this.setChat(true)} chatEnabled={this.state.chatOpened}>
+                        <PeerShareIcon chatEnabled={this.state.chatOpened}/>
+                        Discuss
+                    </ChatButton>
+                </TabContainer>
+                {this.state.flowchartOpened ?
+                    <FlowChart pair={this.state.pair} iPython={this.iPython}
+                               socket={this.state.socket}/> : (this.state?.pair !== null ?
+                        <Chat/> :
+                        <NoPair>
+                            <NoPairIcon/>
+                            No pair availabe, please wait
+                        </NoPair>)}
+            </SideBarContainer> : <ToggleButton/>} </> : <></>}
         </MainContext.Provider>;
     }
 }
