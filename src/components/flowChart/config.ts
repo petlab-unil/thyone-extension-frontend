@@ -6,6 +6,10 @@ export const options = {
         hierarchical: {
             direction: 'UD',
             sortMethod: 'hubsize',
+            nodeSpacing: 300,
+            levelSeparation: 200,
+            treeSpacing: 300,
+            edgeMinimization: false,
         },
     },
     edges: {
@@ -17,7 +21,6 @@ export const options = {
         selfReferenceSize:30,
         font:{
             align: 'horizontal',
-            vadjust: 30,
         },
     },
     nodes: {

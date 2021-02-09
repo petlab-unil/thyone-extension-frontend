@@ -221,15 +221,13 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             });
         };
 
-        if (this.state.accepted) {
-            this.iPython.toolbar.add_buttons_group([
-                {
-                    label: 'Share Selected Cells',
-                    icon: 'fas fa-share-square',
-                    callback: shareSelectedCells,
-                },
-            ]);
-        }
+        this.iPython.toolbar.add_buttons_group([
+            {
+                label: 'Share Selected Cells',
+                icon: 'fas fa-share-square',
+                callback: shareSelectedCells,
+            },
+        ]);
     }
 
     public componentDidMount = () => {
@@ -243,10 +241,14 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             },
         });
         initListeners(socket, this);
-        if (this.state.accepted) this.updatePreviousSelectedCells();
+        setTimeout(() => {
+            if (this.state.accepted) {
+                this.updatePreviousSelectedCells();
+                this.registerCellToolbar();
+                this.initJupyterBindings();
+            }
+        }, 100);
         this.setCallbacks();
-        if (this.state.accepted)  this.registerCellToolbar();
-        this.initJupyterBindings();
         this.setState({socket});
         window.onbeforeunload = async () => {
             await this.loggingApi.logEvent(EventTypes.NOTEBOOK_CLOSED);
