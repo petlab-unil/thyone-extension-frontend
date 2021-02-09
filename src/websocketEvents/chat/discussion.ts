@@ -13,6 +13,6 @@ export const onPairDisconnected = (extension: Extension) => () => {
     extension.pairDisconnected();
 };
 
-export const isAccepted = (extension: Extension) => (accepted: boolean) => {
-    extension.isAccepted(accepted);
+export const onAccepted = (extension: Extension) => (accepted: boolean) => {
+    extension.setAccepted(accepted);
 };

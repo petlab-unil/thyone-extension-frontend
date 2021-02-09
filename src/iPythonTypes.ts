@@ -41,4 +41,5 @@ export interface IPython {
     CellToolbar: CellToolbar
     toolbar: IPythonToolbar
     notebook: Notebook
+    notebook_name: string
 }

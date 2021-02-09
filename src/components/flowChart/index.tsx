@@ -4,27 +4,28 @@ import Graph from 'react-graph-vis';
 import {
     ActionButton,
     ActionInput,
+    AddIconText,
+    AddNodeIcon,
+    ConnectIconText,
     ConnectingText,
-    FlowChartForm,
-    FlowChartButtonContainer,
+    ConnectNodeIcon,
     EdgeActionButtonContainer,
-    FlowChartGrid,
     EdgeActionInput,
+    FlowChartButtonContainer,
+    FlowChartForm,
+    FlowChartGrid,
+    FlowchartShareButton,
+    FlowchartShareIcon,
     FlowChartSVG,
     LonelyActionButton,
     LonelyActionButtonIcon,
     LonelyActionButtonIconText,
-    AddNodeIcon,
-    RemoveNodeIcon,
-    ConnectNodeIcon,
-    AddIconText,
     RemoveIconText,
-    ConnectIconText,
-    FlowchartShareButton,
-    FlowchartShareIcon,
+    RemoveNodeIcon,
 } from './styledComponents';
 import {IPython} from '~iPythonTypes';
 import {options} from '~components/flowChart/config';
+import {EventTypes, LoggingApi} from '~loggingApi';
 
 interface FlowNode {
     id: number,
@@ -48,6 +49,7 @@ interface FlowChartProps {
     iPython: IPython,
     socket: SocketIOClient.Socket | null,
     pair: string | null,
+    loggingApi: LoggingApi,
 }
 
 interface FlowChartState {
@@ -64,11 +66,13 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     public state: FlowChartState;
     private iPython: IPython;
     private readonly socket: SocketIOClient.Socket | null;
+    private readonly loggingApi: LoggingApi;
 
-    constructor({iPython, socket, pair}: FlowChartProps) {
-        super({iPython, socket, pair});
+    constructor({iPython, socket, pair, loggingApi}: FlowChartProps) {
+        super({iPython, socket, pair, loggingApi});
         this.iPython = iPython;
         this.socket = socket;
+        this.loggingApi = loggingApi;
         this.graph = this.iPython.notebook.metadata.graph ?? {
             nodes: [
                 {
@@ -98,6 +102,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
             if (callback) callback();
             this.iPython.notebook.metadata.graph = this.state.graph;
         });
+        this.loggingApi.logEvent(EventTypes.FLOWCHART_EDITED).then(() => {});
     }
 
     private cloneGraph = (): FlowGraph => {
