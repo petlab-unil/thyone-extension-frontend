@@ -183,12 +183,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         const self = this;
         this.iPython.notebook.get_cells().forEach((cell: any) => {
             const execute = cell.execute;
-            let timeoutLog: number;
-            cell.input.onchange = () => {
-                clearTimeout(timeoutLog);
-                timeoutLog = setTimeout(() => {
-                    self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
-                }, 2000);
+            const edit_mode = cell.edit_mode;
+            cell.edit_mode = () => {
+                edit_mode.apply(cell);
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
             };
             cell.execute = async () => {
                 execute.apply(cell);
@@ -197,15 +195,13 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         });
 
         const create_element = this.cell.prototype.create_element;
+        const edit_mode =  this.cell.prototype.edit_mode;
         this.cell.prototype.create_element = function () {
             create_element.apply(this);
             self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {});
-            let timeoutLog: number;
-            this.input.onchange = () => {
-                clearTimeout(timeoutLog);
-                timeoutLog = setTimeout(() => {
-                    self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
-                }, 2000);
+            this.edit_mode = function () {
+                edit_mode.apply(this);
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
             };
             const execute = this.execute;
             this.execute = async function () {
@@ -225,13 +221,15 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             });
         };
 
-        this.iPython.toolbar.add_buttons_group([
-            {
-                label: 'Share Selected Cells',
-                icon: 'fas fa-share-square',
-                callback: shareSelectedCells,
-            },
-        ]);
+        if (this.state.accepted) {
+            this.iPython.toolbar.add_buttons_group([
+                {
+                    label: 'Share Selected Cells',
+                    icon: 'fas fa-share-square',
+                    callback: shareSelectedCells,
+                },
+            ]);
+        }
     }
 
     public componentDidMount = () => {
@@ -245,9 +243,9 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             },
         });
         initListeners(socket, this);
-        this.updatePreviousSelectedCells();
+        if (this.state.accepted) this.updatePreviousSelectedCells();
         this.setCallbacks();
-        this.registerCellToolbar();
+        if (this.state.accepted)  this.registerCellToolbar();
         this.initJupyterBindings();
         this.setState({socket});
         window.onbeforeunload = async () => {
@@ -279,7 +277,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                             <Chat/> :
                             <NoPair>
                                 <NoPairIcon/>
-                                No pair availabe, please wait
+                                No pair available, please wait
                             </NoPair>)}
                 </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;

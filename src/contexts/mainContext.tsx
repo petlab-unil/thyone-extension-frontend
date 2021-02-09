@@ -4,7 +4,6 @@ import {ChatMessage} from '~websocketEvents/types';
 import {Cell} from '~iPythonTypes';
 
 export interface GlobalState {
-    accepted: boolean,
     toggled: boolean;
     setToggled: (toggled: boolean) => void;
     socket: SocketIOClient.Socket | null;
@@ -20,7 +19,6 @@ export interface GlobalState {
 }
 
 export const MainContext = createContext<GlobalState>({
-    accepted: false,
     toggled: true,
     setToggled: (_toggled) => {
     },
