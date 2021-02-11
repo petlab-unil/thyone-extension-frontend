@@ -11,7 +11,7 @@ export const NoPair = Styled.div`
     border: 2px solid #cc444b;
     position: relative;
     top: 12px;
-    left: 62px;
+    left: 75px;
     color: #cc444b;
     margin-top: 40px;
 `;

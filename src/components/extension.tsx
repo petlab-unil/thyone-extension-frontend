@@ -12,6 +12,8 @@ import {FlowChart} from '~components/flowChart';
 import {Minimize} from '@styled-icons/feather/Minimize';
 import {ChatButton, FlowchartButton, FlowchartIcon, PeerShareIcon, TabContainer} from './tabComponents';
 import {EventTypes, LoggingApi} from '~loggingApi';
+import {AdminPage} from '~components/admin';
+import {AdminPanelSettings} from '@styled-icons/material-rounded/AdminPanelSettings';
 
 const MinimizeIcon = Styled(Minimize)`
     float: right;
@@ -21,6 +23,32 @@ const MinimizeIcon = Styled(Minimize)`
     color: #e7e7e7;
     cursor: pointer;
     margin-right: 5px;
+    padding: 2.5px;
+    stroke-width: 2.3px;
+`;
+const AdminPanelButton = Styled(AdminPanelSettings)`
+    float: left;
+    height: 20px;
+    position: relative;
+    top: 0px;
+    color: #e7e7e7;
+    cursor: pointer;
+    margin-right: 5px;
+    padding: 2.5px;
+    stroke-width: 2.3px;
+    &:hover {
+       color: #ff6e40;
+    }
+`;
+
+const AdminButton = Styled.div`
+    width: 50px;
+    Height: 30px;
+    line-height:20px;
+    float: left;
+    color: #e7e7e7;
+    cursor: pointer;
+    margin-left: 5px;
     padding: 2.5px;
     stroke-width: 2.3px;
 `;
@@ -52,6 +80,7 @@ const SideBarContainer = Styled.div`
 `;
 
 interface ExtensionProps {
+    admin: boolean;
     iPython: IPython,
     cell: any,
     userName: string,
@@ -74,6 +103,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.cell = props.cell;
 
         this.state = {
+            admin: props.admin,
             userName: props.userName,
             toggled: true,
             setToggled: this.setToggled,
@@ -83,10 +113,17 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             selectedCells: new Set<Cell>(),
             chatOpened: false,
             setChat: this.setChat,
+            adminOpened: false,
+            setAdmin: this.setAdmin,
             flowchartOpened: true,
             setFlowchart: this.setFlowchart,
             accepted: false,
         };
+    }
+
+    private setAdmin = async  (adminFlag : boolean) => {
+        await this.setState({adminOpened: adminFlag});
+        console.log(`${this.state.adminOpened}`);
     }
 
     private setChat = async (chatFlag: boolean) => {
@@ -261,27 +298,36 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             {this.state.toggled ? <SideBarContainer>
                     <UntoggleButtonContainer>
                         <MinimizeIcon onClick={() => this.setToggled(false)}/>
+                        {this.state.admin ?
+                            <AdminButton onClick={() => this.setAdmin(true)}>
+                                <AdminPanelButton/>
+                            </AdminButton> : <></>}
                     </UntoggleButtonContainer>
                     <TabContainer>
-                        <FlowchartButton onClick={() => this.setFlowchart(true)}
+                        <FlowchartButton onClick={() => {
+                            this.setFlowchart(true);
+                            this.setAdmin(false);
+                        } }
                                          flowChartenabled={this.state.flowchartOpened}>
                             <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
                             Flowchart
                         </FlowchartButton>
-                        <ChatButton onClick={() => this.setChat(true)} chatEnabled={this.state.chatOpened}>
+                        <ChatButton onClick={() => {
+                            this.setChat(true);
+                            this.setAdmin(false);
+                        } } chatEnabled={this.state.chatOpened}>
                             <PeerShareIcon chatEnabled={this.state.chatOpened}/>
                             Discuss
                         </ChatButton>
                     </TabContainer>
-                    {this.state.flowchartOpened ?
-                        <FlowChart pair={this.state.pair} iPython={this.iPython} loggingApi={this.loggingApi}
-                                   socket={this.state.socket}/> : (this.state?.pair !== null ?
-                            <Chat/> :
-                            <NoPair>
-                                <NoPairIcon/>
-                                No pair available, please wait
-                            </NoPair>)}
-                </SideBarContainer> : <ToggleButton/>}
+                   {this.state.adminOpened ? <AdminPage/> : (this.state.flowchartOpened ?
+                            <FlowChart pair={this.state.pair} iPython={this.iPython} loggingApi={this.loggingApi}
+                                       socket={this.state.socket}/> : (this.state?.pair !== null ? <Chat/> :
+                                <NoPair>
+                                    <NoPairIcon/>
+                                    No pair available, please wait
+                                </NoPair>)) }
+            </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }
 }

@@ -39,7 +39,7 @@ window.define([
         loggingApi.logEvent(EventTypes.NOTEBOOK_OPENED).then(() => {
         });
         document.body.prepend(div);
-        ReactDOM.render(<Extension iPython={IPython} cell={Cell} userName={user.name} token={token}
+        ReactDOM.render(<Extension iPython={IPython} cell={Cell} userName={user.name} admin={user.admin} token={token}
                                    loggingApi={loggingApi}/>, div);
     };
 
