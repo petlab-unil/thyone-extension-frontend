@@ -123,7 +123,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     private setAdmin = async  (adminFlag : boolean) => {
         await this.setState({adminOpened: adminFlag});
-        console.log(`${this.state.adminOpened}`);
     }
 
     private setChat = async (chatFlag: boolean) => {
@@ -179,6 +178,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public setAccepted = (accepted: boolean) => {
         this.setState({accepted});
+        this.initShareCellFeature();
     }
 
     private registerCellToolbar = () => {
@@ -248,6 +248,16 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         };
     }
 
+    private initShareCellFeature = () => {
+        setTimeout(() => {
+            if (this.state.accepted) {
+                this.updatePreviousSelectedCells();
+                this.registerCellToolbar();
+                this.initJupyterBindings();
+            }
+        }, 100);
+    }
+
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
@@ -278,13 +288,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             },
         });
         initListeners(socket, this);
-        setTimeout(() => {
-            if (this.state.accepted) {
-                this.updatePreviousSelectedCells();
-                this.registerCellToolbar();
-                this.initJupyterBindings();
-            }
-        }, 100);
         this.setCallbacks();
         this.setState({socket});
         window.onbeforeunload = async () => {
