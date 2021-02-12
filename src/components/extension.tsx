@@ -176,9 +176,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.setState({pair: null, messages: []});
     }
 
-    public setAccepted = (accepted: boolean) => {
-        this.setState({accepted});
-        this.initShareCellFeature();
+    public setAccepted = async (accepted: boolean) => {
+        await this.setState({accepted});
+        this.updatePreviousSelectedCells();
+        this.registerCellToolbar();
+        this.initJupyterBindings();        
     }
 
     private registerCellToolbar = () => {
@@ -249,13 +251,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     private initShareCellFeature = () => {
-        setTimeout(() => {
-            if (this.state.accepted) {
-                this.updatePreviousSelectedCells();
-                this.registerCellToolbar();
-                this.initJupyterBindings();
-            }
-        }, 100);
     }
 
     private initJupyterBindings = () => {
