@@ -8,11 +8,14 @@ export interface GlobalState {
     setToggled: (toggled: boolean) => void;
     socket: SocketIOClient.Socket | null;
     messages: ChatMessage[];
+    admin: boolean,
     userName: string;
     pair: string | null;
     selectedCells: Set<Cell>;
     chatOpened: boolean;
     setChat: (chatOpened: boolean) => void;
+    adminOpened: boolean;
+    setAdmin: (adminOpened: boolean) => void;
     flowchartOpened: boolean;
     setFlowchart: (flowchartOpened: boolean) => void;
     accepted: boolean;
@@ -23,6 +26,7 @@ export const MainContext = createContext<GlobalState>({
     setToggled: (_toggled) => {
     },
     pair: null,
+    admin: false,
     userName: '',
     socket: null,
     messages: [],
@@ -34,4 +38,7 @@ export const MainContext = createContext<GlobalState>({
     setFlowchart: (_flowchartOpened: boolean) => {
     },
     accepted: false,
+    adminOpened: false,
+    setAdmin: (_adminOpened: boolean) => {
+    },
 });
