@@ -7,7 +7,8 @@ export interface Cell {
 
 interface Notebook {
     metadata: any;
-    get_cells : () => any[]
+    get_cells: () => any[];
+    save_notebook: () => void;
 }
 
 interface CheckBoxUiGenerator {

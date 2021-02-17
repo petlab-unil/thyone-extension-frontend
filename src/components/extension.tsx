@@ -180,7 +180,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         await this.setState({accepted});
         this.updatePreviousSelectedCells();
         this.registerCellToolbar();
-        this.initJupyterBindings();        
+        this.initJupyterBindings();
     }
 
     private registerCellToolbar = () => {
@@ -250,9 +250,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         };
     }
 
-    private initShareCellFeature = () => {
-    }
-
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
@@ -303,16 +300,16 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                     </UntoggleButtonContainer>
                     <TabContainer>
                         <FlowchartButton onClick={() => {
-                            this.setFlowchart(true);
-                            this.setAdmin(false);
+                            this.setFlowchart(true).then(() => {});
+                            this.setAdmin(false).then(() => {});
                         } }
                                          flowChartenabled={this.state.flowchartOpened}>
                             <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
                             Flowchart
                         </FlowchartButton>
                         <ChatButton onClick={() => {
-                            this.setChat(true);
-                            this.setAdmin(false);
+                            this.setChat(true).then(() => {});
+                            this.setAdmin(false).then(() => {});
                         } } chatEnabled={this.state.chatOpened}>
                             <PeerShareIcon chatEnabled={this.state.chatOpened}/>
                             Discuss
