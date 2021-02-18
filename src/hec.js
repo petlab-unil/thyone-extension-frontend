@@ -48,7 +48,6 @@ window.define([
         // tslint:disable-next-line:no-this-assignment
         IPython.Notebook.prototype.delete_cell = async function () {
             delete_cell.call(this);
-            console.log("cell deleted");
             await loggingApi.logEvent(EventTypes.CELL_DELETED);
         };
         document.body.prepend(div);

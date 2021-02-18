@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Styled from 'styled-components';
+import {MainContext} from '~contexts/mainContext';
 
 const AdminContainer = Styled.div`
     width: 100%;
@@ -32,12 +33,26 @@ const AdminView = Styled.text`
 `;
 
 export const AdminPage = () => {
+    const {queueStatus, socket} = useContext(MainContext);
+    const pairAdmin = () => {
+        socket?.emit('adminPair');
+    };
     return (
         <AdminContainer>
             <AdminView>ADMIN PAGE</AdminView>
-            <PairAdminButton>
+            <PairAdminButton onClick={pairAdmin}>
                 Pair Admin
             </PairAdminButton>
+            <table>
+                <tr key="___titles">
+                    <th>User</th>
+                    <th>Paired with</th>
+                </tr>
+                {queueStatus.pairs.map(([u1, u2]) => <tr key={`${u1}+${u2}`}>
+                    <td>{u1}</td>
+                    <td>{u2}</td>
+                </tr>)}
+            </table>
         </AdminContainer>
     );
 };
