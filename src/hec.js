@@ -38,14 +38,19 @@ window.define([
         const loggingApi = new LoggingApi(token, IPython.notebook.notebook_name);
         loggingApi.logEvent(EventTypes.NOTEBOOK_OPENED).then(() => {
         });
-        console.log(IPython.Notebook.prototype.save_notebook)
         const save_notebook = IPython.Notebook.prototype.save_notebook;
         // tslint:disable-next-line:no-this-assignment
         IPython.Notebook.prototype.save_notebook = async function () {
             save_notebook.call(this);
             await loggingApi.logEvent(EventTypes.NOTEBOOK_SAVED);
         };
-        console.log(3);
+        const delete_cell = IPython.Notebook.prototype.delete_cell;
+        // tslint:disable-next-line:no-this-assignment
+        IPython.Notebook.prototype.delete_cell = async function () {
+            delete_cell.call(this);
+            console.log("cell deleted");
+            await loggingApi.logEvent(EventTypes.CELL_DELETED);
+        };
         document.body.prepend(div);
         ReactDOM.render(<Extension iPython={IPython} cell={Cell} userName={user.name} admin={user.admin} token={token}
                                    loggingApi={loggingApi}/>, div);
