@@ -43,7 +43,7 @@ window.define([
         // tslint:disable-next-line:no-this-assignment
         IPython.Notebook.prototype.save_notebook = async function () {
             save_notebook.call(this);
-            await loggingApi.logEvent(EventTypes.NOTEBOOK_CLOSED);
+            await loggingApi.logEvent(EventTypes.NOTEBOOK_SAVED);
         };
         console.log(3);
         document.body.prepend(div);
