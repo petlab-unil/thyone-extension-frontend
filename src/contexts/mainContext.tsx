@@ -2,6 +2,7 @@ import {createContext} from 'react';
 import SocketIOClient from 'socket.io-client';
 import {ChatMessage} from '~websocketEvents/types';
 import {Cell} from '~iPythonTypes';
+import {QueueStatus} from '../../../hec-extension-backend/src/websockets/types';
 
 export interface GlobalState {
     toggled: boolean;
@@ -19,6 +20,7 @@ export interface GlobalState {
     flowchartOpened: boolean;
     setFlowchart: (flowchartOpened: boolean) => void;
     accepted: boolean;
+    queueStatus: QueueStatus;
 }
 
 export const MainContext = createContext<GlobalState>({
@@ -40,5 +42,9 @@ export const MainContext = createContext<GlobalState>({
     accepted: false,
     adminOpened: false,
     setAdmin: (_adminOpened: boolean) => {
+    },
+    queueStatus: {
+        pairs: [],
+        queue: [],
     },
 });

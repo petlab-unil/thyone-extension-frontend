@@ -14,6 +14,7 @@ import {ChatButton, FlowchartButton, FlowchartIcon, PeerShareIcon, TabContainer}
 import {EventTypes, LoggingApi} from '~loggingApi';
 import {AdminPage} from '~components/admin';
 import {AdminPanelSettings} from '@styled-icons/material-rounded/AdminPanelSettings';
+import {QueueStatus} from '../../../hec-extension-backend/src/websockets/types';
 
 const MinimizeIcon = Styled(Minimize)`
     float: right;
@@ -118,6 +119,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             flowchartOpened: true,
             setFlowchart: this.setFlowchart,
             accepted: false,
+            queueStatus: {
+                pairs: [],
+                queue: [],
+            },
         };
     }
 
@@ -158,8 +163,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         }
     }
 
-    public addMessage = async (message: ChatMessage) => {
-        await this.setState(prev => ({...prev, messages: [...prev.messages, message]}));
+    public addMessage = (message: ChatMessage) => {
+        this.setState(prev => ({...prev, messages: [...prev.messages, message]}));
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
         chatElem.scrollTop = chatElem.scrollHeight;
@@ -176,13 +181,17 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.setState({pair: null, messages: []});
     }
 
-    public setAccepted = async (accepted: boolean) => {
-        await this.setState({accepted});
-        if (this.state.accepted) {
+    public setAccepted = (accepted: boolean) => {
+        this.setState({accepted});
+        if (accepted) {
             this.updatePreviousSelectedCells();
             this.registerCellToolbar();
             this.initJupyterBindings();
         }
+    }
+
+    public setAdminQueue = (adminQueue: QueueStatus) => {
+        this.setState({queueStatus: adminQueue});
     }
 
     private registerCellToolbar = () => {
