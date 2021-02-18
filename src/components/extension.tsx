@@ -178,9 +178,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public setAccepted = async (accepted: boolean) => {
         await this.setState({accepted});
-        this.updatePreviousSelectedCells();
-        this.registerCellToolbar();
-        this.initJupyterBindings();
+        if (this.state.accepted) {
+            this.updatePreviousSelectedCells();
+            this.registerCellToolbar();
+            this.initJupyterBindings();
+        }
     }
 
     private registerCellToolbar = () => {
