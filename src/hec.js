@@ -25,34 +25,41 @@ window.define([
     };
 
     const initialize = async () => {
-        const div = document.createElement("div");
-        div.id = "react-root";
-        const HUB_BASE_PATH = process.env.HUB_PATH;
-        const token = await getTokenFromPython();
-        const req = await fetch(`${HUB_BASE_PATH}/user`, {
-            headers: {
-                Authorization: `token ${token}`
-            }
-        });
-        const user = await req.json();
-        const loggingApi = new LoggingApi(token, IPython.notebook.notebook_name);
-        loggingApi.logEvent(EventTypes.NOTEBOOK_OPENED).then(() => {
-        });
-        const save_notebook = IPython.Notebook.prototype.save_notebook;
-        // tslint:disable-next-line:no-this-assignment
-        IPython.Notebook.prototype.save_notebook = async function () {
-            save_notebook.call(this);
-            await loggingApi.logEvent(EventTypes.NOTEBOOK_SAVED);
-        };
-        const delete_cell = IPython.Notebook.prototype.delete_cell;
-        // tslint:disable-next-line:no-this-assignment
-        IPython.Notebook.prototype.delete_cell = async function () {
-            delete_cell.call(this);
-            await loggingApi.logEvent(EventTypes.CELL_DELETED);
-        };
-        document.body.prepend(div);
-        ReactDOM.render(<Extension iPython={IPython} cell={Cell} userName={user.name} admin={user.admin} token={token}
-                                   loggingApi={loggingApi}/>, div);
+        try {
+            window.env = process.env;
+            const div = document.createElement("div");
+            div.id = "react-root";
+            const HUB_BASE_PATH = process.env.HUB_PATH;
+            const token = await getTokenFromPython();
+            const req = await fetch(`${HUB_BASE_PATH}/user`, {
+                headers: {
+                    Authorization: `token ${token}`
+                }
+            });
+            const user = await req.json();
+            const loggingApi = new LoggingApi(token, IPython.notebook.notebook_name);
+            loggingApi.logEvent(EventTypes.NOTEBOOK_OPENED).then(() => {
+            });
+            const save_notebook = IPython.Notebook.prototype.save_notebook;
+            // tslint:disable-next-line:no-this-assignment
+            IPython.Notebook.prototype.save_notebook = async function () {
+                save_notebook.call(this);
+                await loggingApi.logEvent(EventTypes.NOTEBOOK_SAVED);
+            };
+            const delete_cell = IPython.Notebook.prototype.delete_cell;
+            // tslint:disable-next-line:no-this-assignment
+            IPython.Notebook.prototype.delete_cell = async function () {
+                delete_cell.call(this);
+                await loggingApi.logEvent(EventTypes.CELL_DELETED);
+            };
+            document.body.prepend(div);
+            ReactDOM.render(<Extension iPython={IPython} cell={Cell} userName={user.name} admin={user.admin}
+                                       token={token}
+                                       loggingApi={loggingApi}/>, div);
+        }
+        catch (e) {
+            console.error(e);
+        }
     };
 
     const initExtension = () => {
