@@ -36,6 +36,7 @@ const AdminView = Styled.text`
 `;
 
 const AdminTable = Styled.table`
+   overflow-y: auto;
    position: relative;
    top: 100px;
    left: 42px;
