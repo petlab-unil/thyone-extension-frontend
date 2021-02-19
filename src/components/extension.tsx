@@ -102,6 +102,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.token = props.token;
         this.loggingApi = props.loggingApi;
         this.cell = props.cell;
+        // @ts-ignore
+        window.extension = this;
 
         this.state = {
             admin: props.admin,
