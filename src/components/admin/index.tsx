@@ -8,17 +8,20 @@ const AdminContainer = Styled.div`
 `;
 const PairAdminButton = Styled.div`
     height: 3em;
-    width: 25%;
+    width: 50%;
     line-height: 3em;
     cursor: pointer;
     text-align: center;
     padding-bottom: 2px;
-    background-color: #ff6e40;
+    background-color: #ff8059;
     color: #fff;
     position: absolute;
     top: 150px;
-    left: 150px;
+    left: 100px;
     border-radius: 50px;
+     &:hover {
+       background-color: #ff6e40;
+    }
 `;
 
 const AdminView = Styled.text`
@@ -32,6 +35,34 @@ const AdminView = Styled.text`
     color: #868686;
 `;
 
+const AdminTable = Styled.table`
+   position: relative;
+   top: 100px;
+   left: 42px;
+   width: 80%;
+   th {
+    width: calc(100% * 0.5);
+    border: solid 1px #ffe7e0;
+    background-color: #ffe7e0;
+    color: #02040a;
+   }
+   td {
+    border-bottom: solid 1px #ffe7e0;
+   }
+    th, td {
+      padding: 15px;
+      text-align: center;
+    }
+`;
+
+const TableDesc = Styled.div`
+   position: relative;
+   bottom: 10px;
+   left: 100px;
+   font-style: oblique;
+   color: #ff6f3f;
+`;
+
 export const AdminPage = () => {
     const {queueStatus, socket} = useContext(MainContext);
     const pairAdmin = () => {
@@ -41,9 +72,10 @@ export const AdminPage = () => {
         <AdminContainer>
             <AdminView>ADMIN PAGE</AdminView>
             <PairAdminButton onClick={pairAdmin}>
-                Pair Admin
+                Get Paired with User
             </PairAdminButton>
-            <table>
+            <AdminTable>
+                <tr><TableDesc> Current Active Users </TableDesc></tr>
                 <tr key="___titles">
                     <th>User</th>
                     <th>Paired with</th>
@@ -52,7 +84,7 @@ export const AdminPage = () => {
                     <td>{u1}</td>
                     <td>{u2}</td>
                 </tr>)}
-            </table>
+            </AdminTable>
         </AdminContainer>
     );
 };
