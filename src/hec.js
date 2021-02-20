@@ -28,7 +28,7 @@ window.define([
         return new Promise((resolve) => {
             const recursive = () => {
                 setTimeout(() => {
-                    if (IPython?.notebook?.kernel) {
+                    if (IPython.notebook && IPython.notebook.kernel) {
                         resolve(true);
                     } else {
                         recursive();
