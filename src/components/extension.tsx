@@ -285,15 +285,21 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public componentDidMount = () => {
-        console.log('Ws uri', process.env.BACKEND_WS, process.env.BACKEND_WS ?? '');
-        const socket = SocketIOClient(process.env.BACKEND_WS ?? '', {
+        if (process.env.BACKEND_WS === undefined) {
+            console.error('process.env.BACKEND_WS undefined');
+            throw new Error('process.env.BACKEND_WS undefined');
+        }
+        const [protocol, adress] = process.env.BACKEND_WS.split('://');
+        const [uri, ...path] = adress.split('/');
+        console.log('uri', `${protocol}://${uri}`, path, `/${path.join('/')}`);
+        const socket = SocketIOClient(`${protocol}://${uri}`, {
             transportOptions: {
                 polling: {
                     extraHeaders: {
                         hubtoken: this.token,
                     },
                 },
-            },
+            }, path: `/${path.join('/')}`,
         });
         initListeners(socket, this);
         this.setCallbacks();
