@@ -24,6 +24,21 @@ window.define([
         });
     };
 
+    const waitForKernel = () => {
+        return new Promise((resolve) => {
+            const recursive = () => {
+                setTimeout(() => {
+                    if (IPython?.notebook?.kernel) {
+                        resolve(true);
+                    } else {
+                        recursive();
+                    }
+                }, 100);
+            }
+            recursive();
+        });
+    };
+
     const initialize = async () => {
         try {
             window.env = {};
@@ -33,6 +48,7 @@ window.define([
             const div = document.createElement("div");
             div.id = "react-root";
             const HUB_BASE_PATH = process.env.HUB_PATH;
+            await waitForKernel();
             const token = await getTokenFromPython();
             const req = await fetch(`${HUB_BASE_PATH}/user`, {
                 headers: {

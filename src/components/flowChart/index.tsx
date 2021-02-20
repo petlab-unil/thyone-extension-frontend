@@ -73,7 +73,7 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
         this.iPython = iPython;
         this.socket = socket;
         this.loggingApi = loggingApi;
-        this.graph = this.iPython.notebook.metadata.graph ?? {
+        this.graph = this.iPython?.notebook?.metadata?.graph ?? {
             nodes: [
                 {
                     id: this.currentNodeId++,
@@ -100,10 +100,11 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     public setState<K extends keyof FlowChartState>(state: ((prevState: Readonly<FlowChartState>, props: Readonly<FlowChartProps>) => (Pick<FlowChartState, K> | FlowChartState | null)) | Pick<FlowChartState, K> | FlowChartState | null, callback?: () => void): void {
         super.setState(state, () => {
             if (callback) callback();
-            if (this.iPython.notebook.metadata.graph !== this.state.graph) {
-                this.loggingApi.logEvent(EventTypes.FLOWCHART_EDITED).then(() => {});
+            if (this.iPython?.notebook?.metadata?.graph !== this.state.graph) {
+                this.loggingApi.logEvent(EventTypes.FLOWCHART_EDITED).then(() => {}).catch(err => console.error(err));
             }
-            this.iPython.notebook.metadata.graph = this.state.graph;
+            const metadata = this.iPython?.notebook?.metadata;
+            if (metadata) metadata.graph = this.state.graph;
         });
     }
 

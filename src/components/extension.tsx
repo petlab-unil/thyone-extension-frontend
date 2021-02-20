@@ -240,7 +240,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             const edit_mode = cell.edit_mode;
             cell.edit_mode = () => {
                 edit_mode.apply(cell);
-                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {}).catch(err => console.error(err));
             };
             cell.execute = async () => {
                 execute.apply(cell);
@@ -252,15 +252,19 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         const edit_mode =  this.cell.prototype.edit_mode;
         this.cell.prototype.create_element = function () {
             create_element.apply(this);
-            self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {});
+            self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {}).catch(err => console.error(err));
             this.edit_mode = function () {
                 edit_mode.apply(this);
-                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {});
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {}).catch(err => console.error(err));
             };
             const execute = this.execute;
             this.execute = async function () {
                 execute.apply(this);
-                await self.loggingApi.logEvent(EventTypes.CELL_EXECUTED);
+                try {
+                    await self.loggingApi.logEvent(EventTypes.CELL_EXECUTED);
+                } catch (err) {
+                    console.error(err);
+                }
             };
         };
     }
@@ -322,16 +326,16 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                     </UntoggleButtonContainer>
                     <TabContainer>
                         <FlowchartButton onClick={() => {
-                            this.setFlowchart(true).then(() => {});
-                            this.setAdmin(false).then(() => {});
+                            this.setFlowchart(true).then(() => {}).catch(err => console.error(err));
+                            this.setAdmin(false).then(() => {}).catch(err => console.error(err));
                         } }
                                          flowChartenabled={this.state.flowchartOpened}>
                             <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
                             Flowchart
                         </FlowchartButton>
                         <ChatButton onClick={() => {
-                            this.setChat(true).then(() => {});
-                            this.setAdmin(false).then(() => {});
+                            this.setChat(true).then(() => {}).catch(err => console.error(err));
+                            this.setAdmin(false).then(() => {}).catch(err => console.error(err));
                         } } chatEnabled={this.state.chatOpened}>
                             <PeerShareIcon chatEnabled={this.state.chatOpened}/>
                             Discuss
