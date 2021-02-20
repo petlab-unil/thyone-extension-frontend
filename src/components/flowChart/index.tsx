@@ -100,9 +100,11 @@ export class FlowChart extends Component<FlowChartProps, FlowChartState> {
     public setState<K extends keyof FlowChartState>(state: ((prevState: Readonly<FlowChartState>, props: Readonly<FlowChartProps>) => (Pick<FlowChartState, K> | FlowChartState | null)) | Pick<FlowChartState, K> | FlowChartState | null, callback?: () => void): void {
         super.setState(state, () => {
             if (callback) callback();
+            if (this.iPython.notebook.metadata.graph !== this.state.graph) {
+                this.loggingApi.logEvent(EventTypes.FLOWCHART_EDITED).then(() => {});
+            }
             this.iPython.notebook.metadata.graph = this.state.graph;
         });
-        this.loggingApi.logEvent(EventTypes.FLOWCHART_EDITED).then(() => {});
     }
 
     private cloneGraph = (): FlowGraph => {
