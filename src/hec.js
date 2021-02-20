@@ -26,7 +26,10 @@ window.define([
 
     const initialize = async () => {
         try {
-            window.env = process.env;
+            window.env = {};
+            window.env.BACKEND_WS = process.env.BACKEND_WS;
+            window.env.HUB_PATH = process.env.HUB_PATH;
+            window.env.BACKEND_HTTP = process.env.BACKEND_HTTP;
             const div = document.createElement("div");
             div.id = "react-root";
             const HUB_BASE_PATH = process.env.HUB_PATH;
@@ -37,6 +40,7 @@ window.define([
                 }
             });
             const user = await req.json();
+            console.log("User", user);
             const loggingApi = new LoggingApi(token, IPython.notebook.notebook_name);
             loggingApi.logEvent(EventTypes.NOTEBOOK_OPENED).then(() => {
             });
@@ -53,11 +57,13 @@ window.define([
                 await loggingApi.logEvent(EventTypes.CELL_DELETED);
             };
             document.body.prepend(div);
+            console.log("Rendering extension");
             ReactDOM.render(<Extension iPython={IPython} cell={Cell} userName={user.name} admin={user.admin}
                                        token={token}
                                        loggingApi={loggingApi}/>, div);
         }
         catch (e) {
+            console.error("Failed to load extension, reason in next message: ");
             console.error(e);
         }
     };
