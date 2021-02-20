@@ -236,6 +236,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         // tslint:disable-next-line:no-this-assignment
         const self = this;
         this.iPython.notebook.get_cells().forEach((cell: any) => {
+            if (!cell || !cell.execute) return;
             const execute = cell.execute;
             const edit_mode = cell.edit_mode;
             cell.edit_mode = () => {
