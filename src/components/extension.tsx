@@ -187,7 +187,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public setAccepted = (accepted: boolean) => {
         this.setState({accepted});
-        if (accepted) {
+        if (accepted && !this.state.accepted) {
             this.updatePreviousSelectedCells();
             this.registerCellToolbar();
             this.initJupyterBindings();
