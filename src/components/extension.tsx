@@ -186,12 +186,12 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public setAccepted = (accepted: boolean) => {
-        this.setState({accepted});
         if (accepted && !this.state.accepted) {
             this.updatePreviousSelectedCells();
             this.registerCellToolbar();
             this.initJupyterBindings();
         }
+        this.setState({accepted});
     }
 
     public setAdminQueue = (adminQueue: QueueStatus) => {
