@@ -295,8 +295,14 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             throw new Error('process.env.BACKEND_WS undefined');
         }
         const address = process.env.BACKEND_WS;
-        console.log(address);
-        const socket = SocketIOClient(address);
+        const socket = SocketIOClient(address, {
+            transportOptions: {
+                polling: {
+                    extraHeaders: {
+                        hubtoken: this.token,
+                    },
+                },
+            }});
         initListeners(socket, this);
         this.setCallbacks();
         this.setState({socket});
