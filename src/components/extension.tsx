@@ -294,18 +294,9 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             console.error('process.env.BACKEND_WS undefined');
             throw new Error('process.env.BACKEND_WS undefined');
         }
-        const [protocol, adress] = process.env.BACKEND_WS.split('://');
-        const [uri, ...path] = adress.split('/');
-        console.log('uri', `${protocol}://${uri}`, path, `/${path.join('/')}`);
-        const socket = SocketIOClient(`${protocol}://${uri}`, {
-            transportOptions: {
-                polling: {
-                    extraHeaders: {
-                        hubtoken: this.token,
-                    },
-                },
-            }, path: `/${path.join('/')}`,
-        });
+        const address = process.env.BACKEND_WS;
+        console.log(address);
+        const socket = SocketIOClient(address);
         initListeners(socket, this);
         this.setCallbacks();
         this.setState({socket});
