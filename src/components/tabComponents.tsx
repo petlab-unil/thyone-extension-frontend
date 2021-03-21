@@ -6,14 +6,15 @@ import React from 'react';
 interface TabComponentsProps{
     flowChartenabled?: boolean;
     chatEnabled?: boolean;
+    notifications?: boolean;
 }
 
 export const TabContainer = Styled.div`
     width: 100%;
-    height: 3em;
-    display: grid | inline-grid;
     grid-template-columns: 150px 150px;
     grid-column-gap: 30px;
+    background-color: #010409;
+    display: inline-block;
 `;
 
 export const FlowchartButton = Styled.div`
@@ -52,8 +53,9 @@ export const ChatButton = Styled.div`
     cursor: pointer;
     text-align: center;
     padding-bottom: 2px;
-    color: ${({chatEnabled}: TabComponentsProps) => chatEnabled ? '#FFF' : '#8e9298'};
-    background-color: #010409;
+    color: ${({chatEnabled, notifications}: TabComponentsProps) => notifications ? '#000' : (chatEnabled ? '#FFF' : '#8e9298')};
+    background-color: ${({notifications}: TabComponentsProps) => notifications ? '#ff6e40' : '#010409'};
+    border-radius: 5px;
     border-left: 1px solid #010409;
     border-top: 1px solid #010409;
     border-bottom:${({chatEnabled}: TabComponentsProps) => chatEnabled ? '5px solid #ff6e40' : ''};

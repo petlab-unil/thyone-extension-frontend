@@ -21,6 +21,7 @@ export interface GlobalState {
     setFlowchart: (flowchartOpened: boolean) => void;
     accepted: boolean;
     queueStatus: QueueStatus;
+    notifications: boolean;
 }
 
 export const MainContext = createContext<GlobalState>({
@@ -47,4 +48,5 @@ export const MainContext = createContext<GlobalState>({
         pairs: [],
         queue: [],
     },
+    notifications: false,
 });

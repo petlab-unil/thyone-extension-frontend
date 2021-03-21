@@ -12,6 +12,10 @@ const MaximizeIcon = Styled(Maximize)`
     stroke-width: 2px;
 `;
 
+interface ToggleButtonProps {
+    notifications: boolean
+}
+
 const ToggleButtonContainer = Styled.div`
         display: inline-block;
         height: 3em;
@@ -20,7 +24,7 @@ const ToggleButtonContainer = Styled.div`
         right: 10px;
         top: 120px;
         position: fixed;
-        background: #010409;
+        background: ${(props: ToggleButtonProps) => props.notifications ? '#ff6e40' : '#010409'};
         border: 1px solid #242038;
         color: #fff;
         z-index: 100000;
@@ -33,9 +37,9 @@ const ToggleButtonContainer = Styled.div`
 `;
 
 export const ToggleButton = () => {
-    const {setToggled} = useContext(MainContext);
+    const {setToggled, notifications} = useContext(MainContext);
 
-    return <ToggleButtonContainer onClick={() => setToggled(true)}>
+    return <ToggleButtonContainer notifications={notifications} onClick={() => setToggled(true)}>
         <MaximizeIcon/>
     </ToggleButtonContainer>;
 };

@@ -97,6 +97,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private readonly token: string;
     private readonly loggingApi: LoggingApi;
     private readonly cell: any;
+    private notificationsInterval: number | null;
 
     constructor(props: ExtensionProps) {
         super(props);
@@ -104,6 +105,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.token = props.token;
         this.loggingApi = props.loggingApi;
         this.cell = props.cell;
+        this.notificationsInterval = null;
         // @ts-ignore
         window.extension = this;
 
@@ -127,29 +129,32 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                 pairs: [],
                 queue: [],
             },
+            notifications: false,
         };
     }
 
-    private setAdmin = async  (adminFlag : boolean) => {
-        await this.setState({adminOpened: adminFlag});
+    private setAdmin = (adminFlag : boolean) => {
+        this.setState({adminOpened: adminFlag});
     }
 
-    private setChat = async (chatFlag: boolean) => {
-        await this.setState({flowchartOpened: !chatFlag, chatOpened: chatFlag});
+    private setChat = (chatFlag: boolean) => {
+        if (this.notificationsInterval !== null) clearInterval(this.notificationsInterval);
+        this.notificationsInterval = null;
+        this.setState({flowchartOpened: !chatFlag, chatOpened: chatFlag, notifications: false});
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
         chatElem.scrollTop = chatElem.scrollHeight;
     }
 
-    private setFlowchart = async (flowchartFlag: boolean) => {
-        await this.setState({flowchartOpened: flowchartFlag, chatOpened: !flowchartFlag});
+    private setFlowchart = (flowchartFlag: boolean) => {
+        this.setState({flowchartOpened: flowchartFlag, chatOpened: !flowchartFlag});
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
         chatElem.scrollTop = chatElem.scrollHeight;
     }
 
     private setToggled = async (toggled: boolean) => {
-        await this.setState({toggled});
+        this.setState({toggled});
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) {
             if (toggled) {
@@ -167,8 +172,17 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         }
     }
 
+    private blinkNotification = () => {
+        if ((!this.state.chatOpened || !this.state.toggled) && this.notificationsInterval === null) {
+            this.notificationsInterval = setInterval(() => {
+                this.setState({notifications: !this.state.notifications});
+            }, 1000);
+        }
+    }
+
     public addMessage = (message: ChatMessage) => {
-        this.setState(prev => ({...prev, messages: [...prev.messages, message]}));
+        this.setState(prev => ({...prev, messages: [...prev.messages, message], notifications: !this.state.chatOpened}));
+        this.blinkNotification();
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
         chatElem.scrollTop = chatElem.scrollHeight;
@@ -176,6 +190,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public foundPair = ({userName, discussion}: PairedInitialData) => {
         this.setState({pair: userName, messages: discussion.messages});
+        this.blinkNotification();
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
         chatElem.scrollTop = chatElem.scrollHeight;
@@ -324,16 +339,16 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                     </UntoggleButtonContainer>
                     <TabContainer>
                         <FlowchartButton onClick={() => {
-                            this.setFlowchart(true).then(() => {}).catch(err => console.error(err));
-                            this.setAdmin(false).then(() => {}).catch(err => console.error(err));
+                            this.setFlowchart(true);
+                            this.setAdmin(false);
                         } }
                                          flowChartenabled={this.state.flowchartOpened}>
                             <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
                             Flowchart
                         </FlowchartButton>
-                        <ChatButton onClick={() => {
-                            this.setChat(true).then(() => {}).catch(err => console.error(err));
-                            this.setAdmin(false).then(() => {}).catch(err => console.error(err));
+                        <ChatButton notifications={this.state.notifications} onClick={() => {
+                            this.setChat(true);
+                            this.setAdmin(false);
                         } } chatEnabled={this.state.chatOpened}>
                             <PeerShareIcon chatEnabled={this.state.chatOpened}/>
                             Discuss
