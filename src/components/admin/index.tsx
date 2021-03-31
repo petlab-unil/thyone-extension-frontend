@@ -25,7 +25,7 @@ const PairAdminButton = Styled.div`
 `;
 
 const AdminView = Styled.text`
-    height: 7em;
+    height: 4em;
     width: 100%;
     line-height: 4em;
     display: block;
@@ -39,8 +39,10 @@ const AdminTable = Styled.table`
    overflow-y: auto;
    position: relative;
    top: 100px;
-   left: 42px;
-   width: 80%;
+   left: 80px;
+   width: calc(60% + 10px);
+   height: 450px;
+   display:block;
    th {
     width: calc(100% * 0.5);
     border: solid 1px #ffe7e0;
@@ -58,8 +60,8 @@ const AdminTable = Styled.table`
 
 const TableDesc = Styled.div`
    position: relative;
-   bottom: 10px;
-   left: 100px;
+   bottom:2px;
+   left: 60px;
    font-style: oblique;
    color: #ff6f3f;
 `;

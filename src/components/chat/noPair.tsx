@@ -10,7 +10,7 @@ export const NoPair = Styled.div`
     border-radius: 100px;
     border: 2px solid #cc444b;
     position: relative;
-    top: 12px;
+    top: -24px;
     left: 75px;
     color: #cc444b;
     margin-top: 40px;
