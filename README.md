@@ -1,5 +1,9 @@
 # hec-jupyter-extension
 
+# Entrypoint
+
+The entry point is in the function `initExtension` in `src/hec.js`
+
 # Install
 
 ## Clone repo
