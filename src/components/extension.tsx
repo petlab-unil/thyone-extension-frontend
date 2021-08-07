@@ -243,9 +243,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.iPython.notebook.metadata.celltoolbar = TOOLBAR_PRESET_NAME;
     }
 
-    private deregisterCellToolbar = () => {
-        const selectedCells = this.iPython.notebook.get_cells().filter(cell => cell.metadata.hecSelected);
-        selectedCells.forEach(cell => cell.celltoolbar.inner_element[0].firstChild.lastChild.lastChild.checked = '');
+    private unselectCells = () => {
+        this.iPython.notebook.get_cells().forEach(cell => cell.celltoolbar.inner_element[0].firstChild.lastChild.lastChild.checked = '');
         this.setState({selectedCells: new Set<Cell>()});
     }
 
@@ -299,7 +298,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                 const {outerHTML} = cellContent;
                 this.state.socket?.emit('cell', outerHTML);
             });
-            this.deregisterCellToolbar();
+            this.unselectCells();
         };
 
         this.iPython.toolbar.add_buttons_group([
