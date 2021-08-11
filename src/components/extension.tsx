@@ -98,6 +98,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private readonly loggingApi: LoggingApi;
     private readonly cell: any;
     private notificationsInterval: number | null;
+    private interval: number = 0;
+    private lastActivity: number =  Date.now();
 
     constructor(props: ExtensionProps) {
         super(props);
@@ -331,12 +333,26 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         window.onbeforeunload = async () => {
             await this.loggingApi.logEvent(EventTypes.NOTEBOOK_CLOSED);
         };
+        this.interval = setInterval(() => this.pingActivity(), 30000);  // every 30 sec
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
+    private recordActivity = () => {
+        this.lastActivity = Date.now();
+    }
+
+    private pingActivity = () => {
+        const content = Date.now() - this.lastActivity < 10000 ? 'active' : 'away';
+        this.state.socket?.emit('activity', content);
     }
 
     render() {
         if (!this.state.accepted) return <></>;
         return <MainContext.Provider value={this.state}>
-            {this.state.toggled ? <SideBarContainer>
+            {this.state.toggled ? <SideBarContainer onMouseOver={this.recordActivity}>
                     <UntoggleButtonContainer>
                         <MinimizeIcon onClick={() => this.setToggled(false)}/>
                         {this.state.admin ?

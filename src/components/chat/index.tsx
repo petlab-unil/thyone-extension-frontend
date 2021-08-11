@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import Styled from 'styled-components';
 import {ChatInput} from '~components/chat/input';
 import {ChatHistory} from '~components/chat/history';
@@ -19,7 +19,7 @@ const PairedIcon = Styled(CheckmarkCircle2Outline)`
 `;
 
 const ActivityIcon = Styled(CircleFill)`
-    height: 20px;
+    height: 15px;
     color: ${({activity}: ChatComponentsProps) => activity === 'active' ? '#00b300' : activity === 'away' ? '#e60000' : '#a9a9a9'};
 `;
 
@@ -47,34 +47,15 @@ const PairedWith = Styled.div`
 `;
 
 export const Chat = () => {
-    const {pair, messages} = useContext(MainContext);
-    const [activity, setActivity] = useState('');
-    let interval: number = 0;
-    const lastPing = messages.filter(msg => msg.msgType === MsgType.Activity).sort((a, b) => { return b.timeStamp - a.timeStamp; })[0];
-
-    useEffect(() => {
-        checkAvailability();
-        interval = setInterval(() => checkAvailability(), 10000); // every 10 seconds
-    }, []);
-
-    useEffect(() => {
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
-
-    function checkAvailability() {
-        const diff = Math.round((((Date.now() - lastPing.timeStamp) % 86400000) % 3600000) / 60000); // milliseconds to minutes
-        const content = diff > 2 ? 'away' : lastPing?.content || '';
-        setActivity(content);
-    }
+    const {pair, messages, userName} = useContext(MainContext);
+    const content = '' || messages.filter(msg => msg.msgType === MsgType.Activity && msg.sender !== userName).sort((a, b) => { return b.timeStamp - a.timeStamp; })[0]?.content;
 
     return (
         <ChatContainer>
             <PairedWith>
                 <PairedIcon/> Paired with {pair}
                 <br/>
-                <ActivityIcon activity = {activity}/> {activity}
+                <ActivityIcon activity = {content}/> {content}
             </PairedWith>
             <ChatHistory/>
             <ChatInput/>
