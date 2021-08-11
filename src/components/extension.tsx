@@ -100,6 +100,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private notificationsInterval: number | null;
     private interval: number = 0;
     private lastActivity: number =  Date.now();
+    private lastStatus: boolean = true;
 
     constructor(props: ExtensionProps) {
         super(props);
@@ -333,7 +334,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         window.onbeforeunload = async () => {
             await this.loggingApi.logEvent(EventTypes.NOTEBOOK_CLOSED);
         };
-        this.interval = setInterval(() => this.pingActivity(), 30000);  // every 30 sec
+        window.onmouseover = async () => this.recordActivity();
+        this.interval = setInterval(() => this.pingActivity(), 5000);  // check every 5 sec
     }
 
     componentWillUnmount() {
@@ -345,14 +347,17 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     private pingActivity = () => {
-        const content = Date.now() - this.lastActivity < 10000 ? 'active' : 'away';
-        this.state.socket?.emit('activity', content);
+        const diff = Date.now() - this.lastActivity < 10000;    // send if more than 10 sec inactivity
+        if ((diff || this.lastStatus) && !(diff && this.lastStatus)) {
+            this.state.socket?.emit('activity', diff ? 'active' : 'away');
+            this.lastStatus = !this.lastStatus;
+        }
     }
 
     render() {
         if (!this.state.accepted) return <></>;
         return <MainContext.Provider value={this.state}>
-            {this.state.toggled ? <SideBarContainer onMouseOver={this.recordActivity}>
+            {this.state.toggled ? <SideBarContainer>
                     <UntoggleButtonContainer>
                         <MinimizeIcon onClick={() => this.setToggled(false)}/>
                         {this.state.admin ?
