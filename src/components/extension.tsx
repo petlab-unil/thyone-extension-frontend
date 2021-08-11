@@ -335,7 +335,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             await this.loggingApi.logEvent(EventTypes.NOTEBOOK_CLOSED);
         };
         window.onmouseover = async () => this.recordActivity();
-        this.interval = setInterval(() => this.pingActivity(), 5000);  // check every 5 sec
+        this.interval = setInterval(() => this.pingActivity(), 3000);  // check every 3 sec
     }
 
     componentWillUnmount() {
