@@ -189,6 +189,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public foundPair = ({userName, discussion}: PairedInitialData) => {
+        this.state.socket?.emit('activity', 'active');
         this.setState({pair: userName, messages: discussion.messages});
         this.blinkNotification();
         const chatElem = document.querySelector('#hec_chat_history_container');

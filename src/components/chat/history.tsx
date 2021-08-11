@@ -3,7 +3,7 @@ import {MainContext} from '~contexts/mainContext';
 import Styled from 'styled-components';
 import {scrollbar} from '~components/scrollBar';
 import {MsgType} from '~websocketEvents/types';
-import {MessageBubble, CellContainer} from '~components/chat/messageBubble';
+import {CellContainer, MessageBubble} from '~components/chat/messageBubble';
 // @ts-ignore
 import Graph from 'react-graph-vis';
 import {options} from '~components/flowChart/config';
@@ -38,6 +38,9 @@ export const ChatHistory = () => {
             }
             if (msg.msgType === MsgType.FlowChart) {
                 return <GraphContainer><Graph graph={JSON.parse(msg.content)} options={options}/></GraphContainer>;
+            }
+            if (msg.msgType === MsgType.Activity) {
+                return <></>;
             }
             throw new Error('Invalid msgtype');
         })

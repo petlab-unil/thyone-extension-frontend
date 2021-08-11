@@ -1,15 +1,26 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Styled from 'styled-components';
 import {ChatInput} from '~components/chat/input';
 import {ChatHistory} from '~components/chat/history';
 import {MainContext} from '~contexts/mainContext';
 import {CheckmarkCircle2Outline} from '@styled-icons/evaicons-outline/CheckmarkCircle2Outline';
+import {CircleFill} from '@styled-icons/bootstrap/CircleFill';
+import {MsgType} from '~websocketEvents/types';
+
+interface ChatComponentsProps{
+    activity?: string;
+}
 
 const PairedIcon = Styled(CheckmarkCircle2Outline)`
     height: 25px;
     color: #1a936f;
     padding: 2px;
     margin: 2px;
+`;
+
+const ActivityIcon = Styled(CircleFill)`
+    height: 20px;
+    color: ${({activity}: ChatComponentsProps) => activity === 'active' ? '#00b300' : activity === 'away' ? '#e60000' : '#a9a9a9'};
 `;
 
 const ChatContainer = Styled.div`
@@ -36,12 +47,35 @@ const PairedWith = Styled.div`
 `;
 
 export const Chat = () => {
-    const {pair} = useContext(MainContext);
+    const {pair, messages} = useContext(MainContext);
+    const [activity, setActivity] = useState('');
+    let interval: number = 0;
+    const lastPing = messages.filter(msg => msg.msgType === MsgType.Activity).sort((a, b) => { return b.timeStamp - a.timeStamp; })[0];
+
+    useEffect(() => {
+        checkAvailability();
+        interval = setInterval(() => checkAvailability(), 10000); // every 10 seconds
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+    function checkAvailability() {
+        const diff = Math.round((((Date.now() - lastPing.timeStamp) % 86400000) % 3600000) / 60000); // milliseconds to minutes
+        const content = diff > 2 ? 'away' : lastPing?.content || '';
+        setActivity(content);
+    }
+
     return (
         <ChatContainer>
             <PairedWith>
-                <PairedIcon/>
-                Paired with {pair}</PairedWith>
+                <PairedIcon/> Paired with {pair}
+                <br/>
+                <ActivityIcon activity = {activity}/> {activity}
+            </PairedWith>
             <ChatHistory/>
             <ChatInput/>
         </ChatContainer>
