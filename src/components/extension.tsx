@@ -16,6 +16,7 @@ import {AdminPage} from '~components/admin';
 import {AdminPanelSettings} from '@styled-icons/material-rounded/AdminPanelSettings';
 import {QueueStatus} from '../../../hec-extension-backend/src/websockets/types';
 import * as dotenv from 'dotenv';
+import {Agreement} from '~components/agreement';
 dotenv.config();
 
 const MinimizeIcon = Styled(Minimize)`
@@ -390,6 +391,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                                     No pair available, please wait
                                 </NoPair>)) }
             </SideBarContainer> : <ToggleButton/>}
+            <Agreement/>
         </MainContext.Provider>;
     }
 }
