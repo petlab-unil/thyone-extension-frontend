@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Styled from 'styled-components';
+import {MainContext} from '~contexts/mainContext';
 
 const Background = Styled.div`
     position: fixed;
@@ -53,12 +54,66 @@ const Button = Styled.button`
     line-height: 1;
 `;
 
+interface UserSchema {
+    _id: string;
+    agreement: boolean;
+}
+
 export const Agreement = () => {
-    const [show, setShow] = useState(true);
+    const {userName} = useContext(MainContext);
+    const [show, setShow] = useState(false);
+
     useEffect(() => {
-        console.log('making a request');
-        // request handling
+        (async function () {
+            try {
+                const res = await fetchAgreement(userName);
+                if (!res.agreement) setShow(true);
+            } catch (e) {
+                console.log(e);
+            }
+        })();
     }, []);
+
+    const checkBadStatus = (res: Response) => {
+        if (res.status >= 300) {
+            const messages = ['Bad Request', 'Server Error'];
+            const index = res.status >= 500;
+
+            throw new Error(`${messages[Number(index)]}: ${res.status}`);
+        }
+    };
+
+    const fetchAgreement = async (userName: string): Promise<UserSchema> => {
+        try {
+            const fetchOptions = {
+                method: 'GET',
+            };
+            const res = await fetch(`${process.env.BACKEND_HTTP}/users/agreement/one/${userName}`, fetchOptions);
+            checkBadStatus(res);
+            return await res.json();
+        } catch (err) {
+            return err;
+        }
+    };
+
+    const updateAgreement = async (userName: string): Promise<Response> => {
+        try {
+            const fetchOptions = {
+                method: 'PUT',
+            };
+            const res = await fetch(`${process.env.BACKEND_HTTP}/users/agreement/update/${userName}`, fetchOptions);
+            checkBadStatus(res);
+            return await res.json();
+        } catch (err) {
+            return err;
+        }
+    };
+
+    const acceptAgreement = async () => {
+        await updateAgreement(userName);
+        setShow(false);
+    };
+
     return show
         ? <Background>
             <Modal>
@@ -67,9 +122,7 @@ export const Agreement = () => {
                     ut fugit magni qui quasi nisi amet repellendus non fuga omnis a sed impedit
                     explicabo accusantium nihil doloremque consequuntur.</Content>
                 <Action>
-                    <Button onClick={() => {}}>
-                        close
-                    </Button>
+                    <Button onClick={acceptAgreement}> Accept </Button>
                 </Action>
             </Modal>
         </Background>
