@@ -326,16 +326,23 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         ]);
     }
 
-    public componentDidMount = async () => {
-        try {
-            const res = await fetchAgreement(this.state.userName);
-            this.agreement = res.agreement;
-            if (res.group === 'experimental') this.setState({showExtension: true});
-            else return;
-        } catch (e) {
-            console.log(e);
-            return;
+    private recordActivity = () => {
+        this.lastActivity = Date.now();
+    }
+
+    private pingActivity = () => {
+        const diff = Date.now() - this.lastActivity < 10000;    // send if more than 10 sec inactivity
+        if ((diff || this.lastStatus) && !(diff && this.lastStatus)) {
+            this.state.socket?.emit('activity', diff ? 'active' : 'away');
+            this.lastStatus = !this.lastStatus;
         }
+    }
+
+    private hideExtension = () => {
+        this.setState({showExtension: false});
+    }
+
+    private loadExtension = () => {
         if (process.env.BACKEND_WS === undefined) {
             console.error('process.env.BACKEND_WS undefined');
             throw new Error('process.env.BACKEND_WS undefined');
@@ -360,28 +367,30 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.interval = setInterval(() => this.pingActivity(), 3000);  // check every 3 sec
     }
 
+    public componentDidMount = async () => {
+        try {
+            const res = await fetchAgreement(this.state.userName);
+            this.agreement = res.agreement;
+            if (res.agreement) this.loadExtension();
+            if (res.group === 'experimental') this.setState({showExtension: true});
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     componentWillUnmount() {
         clearInterval(this.interval);
     }
 
-    private recordActivity = () => {
-        this.lastActivity = Date.now();
-    }
-
-    private pingActivity = () => {
-        const diff = Date.now() - this.lastActivity < 10000;    // send if more than 10 sec inactivity
-        if ((diff || this.lastStatus) && !(diff && this.lastStatus)) {
-            this.state.socket?.emit('activity', diff ? 'active' : 'away');
-            this.lastStatus = !this.lastStatus;
-        }
-    }
-
-    private hideExtension = () => {
-        this.setState({showExtension: false});
-    }
-
     render() {
-        if (!this.state.accepted || !this.state.showExtension) return <></>;
+        if (!this.state.accepted && this.state.showExtension) {
+            return <MainContext.Provider value={this.state}>
+                <Agreement hideExtension={this.hideExtension}
+                           loadExtension={this.loadExtension}
+                           agreement={this.agreement}/>
+            </MainContext.Provider>;
+        }
+        if ((!this.state.accepted && !this.state.showExtension) || (this.state.accepted && !this.state.showExtension)) return <></>;
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
                 <UntoggleButtonContainer>
@@ -416,7 +425,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                             No pair available, please wait
                         </NoPair>))}
             </SideBarContainer> : <ToggleButton/>}
-            <Agreement hideExtension={this.hideExtension} agreement={this.agreement}/>
         </MainContext.Provider>;
     }
 }

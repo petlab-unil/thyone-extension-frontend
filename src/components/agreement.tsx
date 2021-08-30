@@ -67,6 +67,7 @@ const Button = Styled.button`
 
 interface ArgumentProps {
     hideExtension: () => void;
+    loadExtension: () => void;
     agreement: boolean;
 }
 
@@ -83,6 +84,7 @@ export const Agreement = (Props: ArgumentProps) => {
     const acceptAgreement = async () => {
         await updateAgreement(userName);
         setShow(false);
+        Props.loadExtension();
     };
 
     const declineAgreement = () => {
@@ -154,8 +156,8 @@ export const Agreement = (Props: ArgumentProps) => {
                     <br/>In case of decline, you will be allowed to use UNIL’s Jupyter Notebooks but without the extension.
                 </Content>
                 <Action>
-                    <Button onClick={acceptAgreement}> Yes, I agree </Button>
-                    <div style={{float:'right'}}><Button onClick={declineAgreement}> No, I do not agree </Button></div>
+                    <Button onClick={declineAgreement} style={{background: 'red'}}> No, I do not agree </Button>
+                    <div style={{float:'right'}}><Button onClick={acceptAgreement}> Yes, I agree </Button></div>
                 </Action>
             </Modal>
         </Background>
