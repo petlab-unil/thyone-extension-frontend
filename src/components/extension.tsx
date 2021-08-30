@@ -17,6 +17,8 @@ import {AdminPanelSettings} from '@styled-icons/material-rounded/AdminPanelSetti
 import {QueueStatus} from '../../../hec-extension-backend/src/websockets/types';
 import * as dotenv from 'dotenv';
 import {Agreement} from '~components/agreement';
+import {fetchAgreement} from '~components/request';
+
 dotenv.config();
 
 const MinimizeIcon = Styled(Minimize)`
@@ -100,8 +102,9 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private readonly cell: any;
     private notificationsInterval: number | null;
     private interval: number = 0;
-    private lastActivity: number =  Date.now();
+    private lastActivity: number = Date.now();
     private lastStatus: boolean = true;
+    private agreement: boolean = false;
 
     constructor(props: ExtensionProps) {
         super(props);
@@ -134,10 +137,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                 queue: [],
             },
             notifications: false,
+            showExtension: false,
         };
     }
 
-    private setAdmin = (adminFlag : boolean) => {
+    private setAdmin = (adminFlag: boolean) => {
         this.setState({adminOpened: adminFlag});
     }
 
@@ -185,7 +189,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public addMessage = (message: ChatMessage) => {
-        this.setState(prev => ({...prev, messages: [...prev.messages, message], notifications: !this.state.chatOpened}));
+        this.setState(prev => ({
+            ...prev,
+            messages: [...prev.messages, message],
+            notifications: !this.state.chatOpened,
+        }));
         this.blinkNotification();
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
@@ -266,7 +274,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             const edit_mode = cell.edit_mode;
             cell.edit_mode = () => {
                 edit_mode.apply(cell);
-                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {}).catch(err => console.error(err));
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {
+                }).catch(err => console.error(err));
             };
             cell.execute = async () => {
                 execute.apply(cell);
@@ -275,13 +284,15 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         });
 
         const create_element = this.cell.prototype.create_element;
-        const edit_mode =  this.cell.prototype.edit_mode;
+        const edit_mode = this.cell.prototype.edit_mode;
         this.cell.prototype.create_element = function () {
             create_element.apply(this);
-            self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {}).catch(err => console.error(err));
+            self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {
+            }).catch(err => console.error(err));
             this.edit_mode = function () {
                 edit_mode.apply(this);
-                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {}).catch(err => console.error(err));
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {
+                }).catch(err => console.error(err));
             };
             const execute = this.execute;
             this.execute = async function () {
@@ -315,7 +326,16 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         ]);
     }
 
-    public componentDidMount = () => {
+    public componentDidMount = async () => {
+        try {
+            const res = await fetchAgreement(this.state.userName);
+            this.agreement = res.agreement;
+            if (res.group === 'experimental') this.setState({showExtension: true});
+            else return;
+        } catch (e) {
+            console.log(e);
+            return;
+        }
         if (process.env.BACKEND_WS === undefined) {
             console.error('process.env.BACKEND_WS undefined');
             throw new Error('process.env.BACKEND_WS undefined');
@@ -328,7 +348,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                         hubtoken: this.token,
                     },
                 },
-            }});
+            },
+        });
         initListeners(socket, this);
         this.setCallbacks();
         this.setState({socket});
@@ -355,43 +376,47 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         }
     }
 
+    private hideExtension = () => {
+        this.setState({showExtension: false});
+    }
+
     render() {
-        if (!this.state.accepted) return <></>;
+        if (!this.state.accepted || !this.state.showExtension) return <></>;
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
-                    <UntoggleButtonContainer>
-                        <MinimizeIcon onClick={() => this.setToggled(false)}/>
-                        {this.state.admin ?
-                            <AdminButton onClick={() => this.setAdmin(true)}>
-                                <AdminPanelButton/>
-                            </AdminButton> : <></>}
-                    </UntoggleButtonContainer>
-                    <TabContainer>
-                        <FlowchartButton onClick={() => {
-                            this.setFlowchart(true);
-                            this.setAdmin(false);
-                        } }
-                                         flowChartenabled={this.state.flowchartOpened}>
-                            <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
-                            Flowchart
-                        </FlowchartButton>
-                        <ChatButton notifications={this.state.notifications} onClick={() => {
-                            this.setChat(true);
-                            this.setAdmin(false);
-                        } } chatEnabled={this.state.chatOpened}>
-                            <PeerShareIcon chatEnabled={this.state.chatOpened}/>
-                            Discuss
-                        </ChatButton>
-                    </TabContainer>
-                   {this.state.adminOpened ? <AdminPage/> : (this.state.flowchartOpened ?
-                            <FlowChart pair={this.state.pair} iPython={this.iPython} loggingApi={this.loggingApi}
-                                       socket={this.state.socket}/> : (this.state?.pair !== null ? <Chat/> :
-                                <NoPair>
-                                    <NoPairIcon/>
-                                    No pair available, please wait
-                                </NoPair>)) }
+                <UntoggleButtonContainer>
+                    <MinimizeIcon onClick={() => this.setToggled(false)}/>
+                    {this.state.admin ?
+                        <AdminButton onClick={() => this.setAdmin(true)}>
+                            <AdminPanelButton/>
+                        </AdminButton> : <></>}
+                </UntoggleButtonContainer>
+                <TabContainer>
+                    <FlowchartButton onClick={() => {
+                        this.setFlowchart(true);
+                        this.setAdmin(false);
+                    }}
+                                     flowChartenabled={this.state.flowchartOpened}>
+                        <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
+                        Flowchart
+                    </FlowchartButton>
+                    <ChatButton notifications={this.state.notifications} onClick={() => {
+                        this.setChat(true);
+                        this.setAdmin(false);
+                    }} chatEnabled={this.state.chatOpened}>
+                        <PeerShareIcon chatEnabled={this.state.chatOpened}/>
+                        Discuss
+                    </ChatButton>
+                </TabContainer>
+                {this.state.adminOpened ? <AdminPage/> : (this.state.flowchartOpened ?
+                    <FlowChart pair={this.state.pair} iPython={this.iPython} loggingApi={this.loggingApi}
+                               socket={this.state.socket}/> : (this.state?.pair !== null ? <Chat/> :
+                        <NoPair>
+                            <NoPairIcon/>
+                            No pair available, please wait
+                        </NoPair>))}
             </SideBarContainer> : <ToggleButton/>}
-            <Agreement/>
+            <Agreement hideExtension={this.hideExtension} agreement={this.agreement}/>
         </MainContext.Provider>;
     }
 }

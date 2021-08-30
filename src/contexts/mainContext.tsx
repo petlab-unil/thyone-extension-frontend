@@ -22,6 +22,7 @@ export interface GlobalState {
     accepted: boolean;
     queueStatus: QueueStatus;
     notifications: boolean;
+    showExtension: boolean;
 }
 
 export const MainContext = createContext<GlobalState>({
@@ -49,4 +50,5 @@ export const MainContext = createContext<GlobalState>({
         queue: [],
     },
     notifications: false,
+    showExtension: false,
 });
