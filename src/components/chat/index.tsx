@@ -6,6 +6,7 @@ import {MainContext} from '~contexts/mainContext';
 import {CheckmarkCircle2Outline} from '@styled-icons/evaicons-outline/CheckmarkCircle2Outline';
 import {CircleFill} from '@styled-icons/bootstrap/CircleFill';
 import {MsgType} from '~websocketEvents/types';
+import {PaneClose} from '@styled-icons/fluentui-system-filled/PaneClose';
 
 interface ChatComponentsProps{
     activity?: string;
@@ -46,16 +47,28 @@ const PairedWith = Styled.div`
     color: #1a936f;
 `;
 
+export const UnpairIcon = Styled(PaneClose)`
+    height: 25px;
+    color: #cc444b;
+    padding: 2px;
+    margin: 2px;
+`;
+
 export const Chat = () => {
-    const {pair, messages, userName} = useContext(MainContext);
+    const {pair, messages, userName, socket} = useContext(MainContext);
     const content = '' || messages.filter(msg => msg.msgType === MsgType.Activity && msg.sender !== userName).sort((a, b) => { return b.timeStamp - a.timeStamp; })[0]?.content;
+
+    const unpair = () => {
+        socket?.emit('unpair');
+    };
 
     return (
         <ChatContainer>
             <PairedWith>
                 <PairedIcon/> Paired with {pair}
                 <br/>
-                <ActivityIcon activity = {content}/> {content}
+                <ActivityIcon activity={content}/> {content}
+                <UnpairIcon onClick={unpair}/>
             </PairedWith>
             <ChatHistory/>
             <ChatInput/>

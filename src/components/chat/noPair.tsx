@@ -1,8 +1,9 @@
 import Styled from 'styled-components';
 import {Warning} from '@styled-icons/typicons/Warning';
+import {Random} from '@styled-icons/open-iconic/Random';
 
 export const NoPair = Styled.div`
-    height: 36px;
+    height: 40px;
     line-height: 30px;
     width: 250px;
     text-align: center;
@@ -17,6 +18,13 @@ export const NoPair = Styled.div`
 `;
 
 export const NoPairIcon = Styled(Warning)`
+    height: 25px;
+    color: #cc444b;
+    padding: 2px;
+    margin: 2px;
+`;
+
+export const RandomIcon = Styled(Random)`
     height: 25px;
     color: #cc444b;
     padding: 2px;

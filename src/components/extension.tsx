@@ -5,7 +5,7 @@ import SocketIOClient from 'socket.io-client';
 import {initListeners} from '~websocketEvents/initListeners';
 import {ChatMessage, PairedInitialData} from '~websocketEvents/types';
 import {Chat} from '~components/chat';
-import {NoPair, NoPairIcon} from '~components/chat/noPair';
+import {NoPair, NoPairIcon, RandomIcon} from '~components/chat/noPair';
 import {Cell, IPython} from '~iPythonTypes';
 import {ToggleButton} from '~components/toggleButton';
 import {FlowChart} from '~components/flowChart';
@@ -354,6 +354,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         }
     }
 
+    private pairRandom = () => {
+        this.state.socket?.emit('pairRandom');
+    }
+
     render() {
         if (!this.state.accepted) return <></>;
         return <MainContext.Provider value={this.state}>
@@ -388,6 +392,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                                 <NoPair>
                                     <NoPairIcon/>
                                     No pair available, please wait
+                                    <RandomIcon onClick={this.pairRandom}/>
                                 </NoPair>)) }
             </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
