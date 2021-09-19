@@ -4,8 +4,9 @@ import Styled from 'styled-components';
 import SocketIOClient from 'socket.io-client';
 import {initListeners} from '~websocketEvents/initListeners';
 import {ChatMessage, PairedInitialData} from '~websocketEvents/types';
-import {Chat} from '~components/chat';
-import {NoPair, NoPairIcon, RandomIcon} from '~components/chat/noPair';
+import {Chat, SearchIcon} from '~components/chat';
+import {NoPair, NoPairIcon} from '~components/chat/noPair';
+import {PairingChoice, RandomIcon} from '~components/chat/index';
 import {Cell, IPython} from '~iPythonTypes';
 import {ToggleButton} from '~components/toggleButton';
 import {FlowChart} from '~components/flowChart';
@@ -16,6 +17,7 @@ import {AdminPage} from '~components/admin';
 import {AdminPanelSettings} from '@styled-icons/material-rounded/AdminPanelSettings';
 import {QueueStatus} from '../../../hec-extension-backend/src/websockets/types';
 import * as dotenv from 'dotenv';
+
 dotenv.config();
 
 const MinimizeIcon = Styled(Minimize)`
@@ -99,7 +101,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private readonly cell: any;
     private notificationsInterval: number | null;
     private interval: number = 0;
-    private lastActivity: number =  Date.now();
+    private lastActivity: number = Date.now();
     private lastStatus: boolean = true;
 
     constructor(props: ExtensionProps) {
@@ -133,10 +135,12 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                 queue: [],
             },
             notifications: false,
+            pendingPairing: false,
+            searchUser: '',
         };
     }
 
-    private setAdmin = (adminFlag : boolean) => {
+    private setAdmin = (adminFlag: boolean) => {
         this.setState({adminOpened: adminFlag});
     }
 
@@ -184,7 +188,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public addMessage = (message: ChatMessage) => {
-        this.setState(prev => ({...prev, messages: [...prev.messages, message], notifications: !this.state.chatOpened}));
+        this.setState(prev => ({
+            ...prev,
+            messages: [...prev.messages, message],
+            notifications: !this.state.chatOpened,
+        }));
         this.blinkNotification();
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
@@ -193,7 +201,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public foundPair = ({userName, discussion}: PairedInitialData) => {
         this.state.socket?.emit('activity', 'active');
-        this.setState({pair: userName, messages: discussion.messages});
+        this.setState({pair: userName, messages: discussion.messages, pendingPairing: false});
         this.blinkNotification();
         const chatElem = document.querySelector('#hec_chat_history_container');
         if (chatElem === null) return;
@@ -201,7 +209,7 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public pairDisconnected = () => {
-        this.setState({pair: null, messages: []});
+        this.setState({pair: null, messages: [], pendingPairing: true});
     }
 
     public setAccepted = (accepted: boolean) => {
@@ -215,6 +223,16 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
 
     public setAdminQueue = (adminQueue: QueueStatus) => {
         this.setState({queueStatus: adminQueue});
+    }
+
+    public pendingPairing = () => {
+        this.setState({pendingPairing: true});
+        alert('You are waiting other people to join the chat!');
+    }
+
+    public userUnavailable = () => {
+        this.setState({pendingPairing: true});
+        alert('The user is unavailable');
     }
 
     private registerCellToolbar = () => {
@@ -265,7 +283,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
             const edit_mode = cell.edit_mode;
             cell.edit_mode = () => {
                 edit_mode.apply(cell);
-                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {}).catch(err => console.error(err));
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {
+                }).catch(err => console.error(err));
             };
             cell.execute = async () => {
                 execute.apply(cell);
@@ -274,13 +293,15 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         });
 
         const create_element = this.cell.prototype.create_element;
-        const edit_mode =  this.cell.prototype.edit_mode;
+        const edit_mode = this.cell.prototype.edit_mode;
         this.cell.prototype.create_element = function () {
             create_element.apply(this);
-            self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {}).catch(err => console.error(err));
+            self.loggingApi.logEvent(EventTypes.CELL_CREATED).then(() => {
+            }).catch(err => console.error(err));
             this.edit_mode = function () {
                 edit_mode.apply(this);
-                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {}).catch(err => console.error(err));
+                self.loggingApi.logEvent(EventTypes.CELL_EDITED).then(() => {
+                }).catch(err => console.error(err));
             };
             const execute = this.execute;
             this.execute = async function () {
@@ -327,7 +348,8 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                         hubtoken: this.token,
                     },
                 },
-            }});
+            },
+        });
         initListeners(socket, this);
         this.setCallbacks();
         this.setState({socket});
@@ -358,42 +380,59 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.state.socket?.emit('pairRandom');
     }
 
+    private updateSearchUser = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({searchUser: event.target.value});
+    }
+
+    private pairUser = () => {
+        this.state.socket?.emit('pairUser', this.state.searchUser);
+    }
+
     render() {
         if (!this.state.accepted) return <></>;
         return <MainContext.Provider value={this.state}>
             {this.state.toggled ? <SideBarContainer>
-                    <UntoggleButtonContainer>
-                        <MinimizeIcon onClick={() => this.setToggled(false)}/>
-                        {this.state.admin ?
-                            <AdminButton onClick={() => this.setAdmin(true)}>
-                                <AdminPanelButton/>
-                            </AdminButton> : <></>}
-                    </UntoggleButtonContainer>
-                    <TabContainer>
-                        <FlowchartButton onClick={() => {
-                            this.setFlowchart(true);
-                            this.setAdmin(false);
-                        } }
-                                         flowChartenabled={this.state.flowchartOpened}>
-                            <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
-                            Flowchart
-                        </FlowchartButton>
-                        <ChatButton notifications={this.state.notifications} onClick={() => {
-                            this.setChat(true);
-                            this.setAdmin(false);
-                        } } chatEnabled={this.state.chatOpened}>
-                            <PeerShareIcon chatEnabled={this.state.chatOpened}/>
-                            Discuss
-                        </ChatButton>
-                    </TabContainer>
-                   {this.state.adminOpened ? <AdminPage/> : (this.state.flowchartOpened ?
-                            <FlowChart pair={this.state.pair} iPython={this.iPython} loggingApi={this.loggingApi}
-                                       socket={this.state.socket}/> : (this.state?.pair !== null ? <Chat/> :
-                                <NoPair>
-                                    <NoPairIcon/>
-                                    No pair available, please wait
-                                    <RandomIcon onClick={this.pairRandom}/>
-                                </NoPair>)) }
+                <UntoggleButtonContainer>
+                    <MinimizeIcon onClick={() => this.setToggled(false)}/>
+                    {this.state.admin ?
+                        <AdminButton onClick={() => this.setAdmin(true)}>
+                            <AdminPanelButton/>
+                        </AdminButton> : <></>}
+                </UntoggleButtonContainer>
+                <TabContainer>
+                    <FlowchartButton onClick={() => {
+                        this.setFlowchart(true);
+                        this.setAdmin(false);
+                    }}
+                                     flowChartenabled={this.state.flowchartOpened}>
+                        <FlowchartIcon flowChartenabled={this.state.flowchartOpened}/>
+                        Flowchart
+                    </FlowchartButton>
+                    <ChatButton notifications={this.state.notifications} onClick={() => {
+                        this.setChat(true);
+                        this.setAdmin(false);
+                    }} chatEnabled={this.state.chatOpened}>
+                        <PeerShareIcon chatEnabled={this.state.chatOpened}/>
+                        Discuss
+                    </ChatButton>
+                </TabContainer>
+                {this.state.adminOpened ? <AdminPage/> : (this.state.flowchartOpened ?
+                    <FlowChart pair={this.state.pair} iPython={this.iPython} loggingApi={this.loggingApi}
+                               socket={this.state.socket}/> : (this.state?.pair !== null ? <Chat/> :
+                        <>
+                            <NoPair>
+                                <NoPairIcon/>
+                                No pair available, please wait
+                            </NoPair>
+                            <PairingChoice onClick={this.pairRandom}>
+                                <RandomIcon/>
+                                Random
+                            </PairingChoice>
+                            <PairingChoice>
+                                <SearchIcon onClick={this.pairUser}/>
+                                <input type="text" value={this.state.searchUser} onChange={this.updateSearchUser} onKeyDown={e => e.stopPropagation()} />
+                            </PairingChoice>
+                        </>))}
             </SideBarContainer> : <ToggleButton/>}
         </MainContext.Provider>;
     }

@@ -21,3 +21,11 @@ export const onAccepted = (extension: Extension) => (accepted: boolean) => {
 export const onAdminQueue = (extension: Extension) => (adminQueue: QueueStatus) => {
     extension.setAdminQueue(adminQueue);
 };
+
+export const onPendingPairing = (extension: Extension) => () => {
+    extension.pendingPairing();
+};
+
+export const onUserUnavailable = (extension: Extension) => () => {
+    extension.userUnavailable();
+};

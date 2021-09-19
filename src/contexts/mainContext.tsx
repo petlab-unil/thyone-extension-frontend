@@ -22,6 +22,8 @@ export interface GlobalState {
     accepted: boolean;
     queueStatus: QueueStatus;
     notifications: boolean;
+    pendingPairing: boolean;
+    searchUser: string;
 }
 
 export const MainContext = createContext<GlobalState>({
@@ -49,4 +51,6 @@ export const MainContext = createContext<GlobalState>({
         queue: [],
     },
     notifications: false,
+    pendingPairing: false,
+    searchUser: '',
 });
