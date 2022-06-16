@@ -98,9 +98,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     private readonly loggingApi: LoggingApi;
     private readonly cell: any;
     private notificationsInterval: number | null;
-    private interval: number = 0;
-    private lastActivity: number =  Date.now();
-    private lastStatus: boolean = true;
 
     constructor(props: ExtensionProps) {
         super(props);
@@ -192,7 +189,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
     }
 
     public foundPair = ({userName, discussion}: PairedInitialData) => {
-        this.state.socket?.emit('activity', 'active');
         this.setState({pair: userName, messages: discussion.messages});
         this.blinkNotification();
         const chatElem = document.querySelector('#hec_chat_history_container');
@@ -247,11 +243,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.iPython.notebook.metadata.celltoolbar = TOOLBAR_PRESET_NAME;
     }
 
-    private unselectCells = () => {
-        this.iPython.notebook.get_cells().forEach(cell => cell.celltoolbar.inner_element[0].firstChild.lastChild.lastChild.checked = '');
-        this.setState({selectedCells: new Set<Cell>()});
-    }
-
     private updatePreviousSelectedCells = () => {
         this.setState({selectedCells: new Set(this.iPython.notebook.get_cells().filter(cell => cell.metadata.hecSelected))});
     }
@@ -302,7 +293,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
                 const {outerHTML} = cellContent;
                 this.state.socket?.emit('cell', outerHTML);
             });
-            this.unselectCells();
         };
 
         this.iPython.toolbar.add_buttons_group([
@@ -334,24 +324,6 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         window.onbeforeunload = async () => {
             await this.loggingApi.logEvent(EventTypes.NOTEBOOK_CLOSED);
         };
-        window.onmouseover = async () => this.recordActivity();
-        this.interval = setInterval(() => this.pingActivity(), 3000);  // check every 3 sec
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.interval);
-    }
-
-    private recordActivity = () => {
-        this.lastActivity = Date.now();
-    }
-
-    private pingActivity = () => {
-        const diff = Date.now() - this.lastActivity < 10000;    // send if more than 10 sec inactivity
-        if ((diff || this.lastStatus) && !(diff && this.lastStatus)) {
-            this.state.socket?.emit('activity', diff ? 'active' : 'away');
-            this.lastStatus = !this.lastStatus;
-        }
     }
 
     render() {
