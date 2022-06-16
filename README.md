@@ -38,10 +38,6 @@ The entry point is in the function `initExtension` in `src/hec.js`
 
         npm install -g configurable-http-proxy
 
-# Launch Jupyter
-
-    jupyter notebook
-
 # Test your code in Jupyter
 
     npm run build

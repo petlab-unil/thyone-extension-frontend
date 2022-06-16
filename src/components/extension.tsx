@@ -133,10 +133,20 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         };
     }
 
+    /**
+     * global state function to open the admin page.
+     * @param adminFlag
+     */
     private setAdmin = (adminFlag : boolean) => {
         this.setState({adminOpened: adminFlag});
     }
 
+    /**
+     * global state function to open the connection pannel page which leads to multiple chats.
+     * clears the notifications that indicate a new unred message.
+     * @param chatFlag
+     * @returns
+     */
     private setChat = (chatFlag: boolean) => {
         if (this.notificationsInterval !== null) clearInterval(this.notificationsInterval);
         this.notificationsInterval = null;
@@ -146,6 +156,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         chatElem.scrollTop = chatElem.scrollHeight;
     }
 
+    /**
+     * global state function to open the flowchart page.
+     * @param flowchartFlag
+     * @returns
+     */
     private setFlowchart = (flowchartFlag: boolean) => {
         this.setState({flowchartOpened: flowchartFlag, chatOpened: !flowchartFlag});
         const chatElem = document.querySelector('#hec_chat_history_container');
@@ -153,6 +168,11 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         chatElem.scrollTop = chatElem.scrollHeight;
     }
 
+    /**
+     * global state function to show or hide the extension.
+     * @param toggled
+     * @returns
+     */
     private setToggled = async (toggled: boolean) => {
         this.setState({toggled});
         const chatElem = document.querySelector('#hec_chat_history_container');
@@ -172,6 +192,9 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         }
     }
 
+    /**
+     * Make the extension blink to indicate a new incoming event.
+     */
     private blinkNotification = () => {
         if ((!this.state.chatOpened || !this.state.toggled) && this.notificationsInterval === null) {
             this.notificationsInterval = setInterval(() => {
@@ -180,6 +203,13 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         }
     }
 
+    /**
+     * Socket response to the event 'message'.
+     * Add to the current discussion messages the new incoming one.
+     * Notify this user of a new message incoming.
+     * @param message
+     * @returns
+     */
     public addMessage = (message: ChatMessage) => {
         this.setState(prev => ({...prev, messages: [...prev.messages, message], notifications: !this.state.chatOpened}));
         this.blinkNotification();
@@ -188,6 +218,13 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         chatElem.scrollTop = chatElem.scrollHeight;
     }
 
+    /**
+     * Socket response to the event 'foundPair'.
+     * Connect this user with an other specific user.
+     * Notify this user of the event.
+     * @param { userNames, discussion }: the active user of the group and the previous disucssion with them.
+     * @returns
+     */
     public foundPair = ({userName, discussion}: PairedInitialData) => {
         this.setState({pair: userName, messages: discussion.messages});
         this.blinkNotification();
@@ -196,10 +233,19 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         chatElem.scrollTop = chatElem.scrollHeight;
     }
 
+    /**
+     * Socket response to the event 'pairDisconnected'.
+     * Leave the discussion with the other user.
+     */
     public pairDisconnected = () => {
         this.setState({pair: null, messages: []});
     }
 
+    /**
+     * Socket response to the event 'accepted'.
+     * Indicate to this user that how backend is performing after the handshake.
+     * @param accepted: indicate if the backed is ready after the handshake.
+     */
     public setAccepted = (accepted: boolean) => {
         if (accepted && !this.state.accepted) {
             this.updatePreviousSelectedCells();
@@ -209,10 +255,18 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.setState({accepted});
     }
 
+    /**
+     * Socket response to the event 'adminQueue'.
+     * When this admin user is online, it will get streamed the queue status.
+     * @param adminQueue
+     */
     public setAdminQueue = (adminQueue: QueueStatus) => {
         this.setState({queueStatus: adminQueue});
     }
 
+    /**
+     * Load the checkbox in each code cell when the jupyterhub API is loaded.
+     */
     private registerCellToolbar = () => {
         const {CellToolbar} = this.iPython;
 
@@ -243,10 +297,16 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         this.iPython.notebook.metadata.celltoolbar = TOOLBAR_PRESET_NAME;
     }
 
+    /**
+     * Get all the previously selected cells when the jupyterhub API is loaded.
+     */
     private updatePreviousSelectedCells = () => {
         this.setState({selectedCells: new Set(this.iPython.notebook.get_cells().filter(cell => cell.metadata.hecSelected))});
     }
 
+    /**
+     * Add the callbacks to record the different cell activities into the jupyterhub API components.
+     */
     private setCallbacks = () => {
         // tslint:disable-next-line:no-this-assignment
         const self = this;
@@ -285,6 +345,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         };
     }
 
+    /**
+     * Add a button in the toolbar to share the selected cells when pressed.
+     * This function is executed when the jupyterhub API is loaded.
+     */
     private initJupyterBindings = () => {
         const shareSelectedCells = () => {
             this.state.selectedCells.forEach((cell) => {
@@ -304,6 +368,10 @@ export class Extension extends Component<ExtensionProps, GlobalState> {
         ]);
     }
 
+    /**
+     * Once the React extension has loaded, fetch the agreement of the user to the terms.
+     * If the user has accepted them, then load the extension.
+     */
     public componentDidMount = () => {
         if (process.env.BACKEND_WS === undefined) {
             console.error('process.env.BACKEND_WS undefined');

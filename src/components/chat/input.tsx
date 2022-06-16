@@ -28,12 +28,21 @@ const DivInput = Styled.textarea`
 export const ChatInput = () => {
     const [text, updateText] = useState<string>('');
     const {socket} = useContext(MainContext);
+
+    /**
+     * Signal the backend that this user has sent a message.
+     * @returns
+     */
     const sendMessage = () => {
         if (!text.length) return;
         socket?.emit('msg', text);
         updateText('');
     };
 
+    /**
+     * Handle three keys press events
+     * @param e
+     */
     const keyDownEvent = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         e.stopPropagation();
         e.preventDefault();
