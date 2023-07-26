@@ -10,7 +10,7 @@ This extension has two main features :
 
 This repository contains the frontend code for the Thyone extension. The code is compatible with version 6.0.3 of Jupyter Notebook. Please note that it has not been tested with any version after 6.2.0. Additionally, please be aware that this extension is not supported in JupyterLab.
 
-Before setting up the frontend code for the Thyone extension, it is essential to configure and run the [Thyone Backend Code](link here). The successful functioning of the extension relies on communication with the backend. Therefore, please ensure that you have set up and started the backend code before proceeding with the frontend setup.
+Before setting up the frontend code for the Thyone extension, it is essential to configure and run the [Thyone Backend Code](https://github.com/petlab-unil/thyone-extension-backend). The successful functioning of the extension relies on communication with the backend. Therefore, please ensure that you have set up and started the backend code before proceeding with the frontend setup.
 
 ## Entrypoint
 
@@ -77,7 +77,7 @@ To install the Thyone extension in your local environment, follow these steps:
 
 ## Using Thyone Extension in Your Local Environment
 
-7. Please make sure that the [Thyone Backend code](tba) is running on your local environment. If the backend code is not running, the frontend code of the extension will build successfully, but the extension will not appear on the interface. To troubleshoot any issues, check the browser console for error messages.
+7. Please make sure that the [Thyone Backend code](https://github.com/petlab-unil/thyone-extension-backend) is running on your local environment. If the backend code is not running, the frontend code of the extension will build successfully, but the extension will not appear on the interface. To troubleshoot any issues, check the browser console for error messages.
 
 8. Run Jupyterhub as root and open a Jupyter Notebook instance. 
 
